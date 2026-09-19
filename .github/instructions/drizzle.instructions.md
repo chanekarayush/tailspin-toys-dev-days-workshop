@@ -26,6 +26,27 @@ The app's data lives in a local SQLite database accessed through **Drizzle ORM**
 - Foreign keys use `.references(() => other.id)`.
 - Export inferred types (`typeof table.$inferSelect`) and build app-facing types from them — don't redeclare row shapes by hand.
 
+## Commenting and exported API docs
+
+- Add comments only when they explain intent, constraints, or a non-obvious decision; avoid comments that simply mirror the code.
+- Treat stale comments as bugs: update or remove them when the underlying code changes.
+- Every exported function in `db/**/*.ts` and `src/lib/*.ts` must include TSDoc/JSDoc that describes the purpose, parameters, and return value.
+- Document the injectable `db` argument clearly so the testing pattern remains obvious.
+- For non-trivial logic, prefer a brief summary and `@param` / `@returns` tags over long prose comments.
+
+```ts
+/**
+ * Returns the sorted list of game IDs used to generate the static catalog pages.
+ *
+ * @param db - The Drizzle database instance used for the query.
+ * @returns A stable, title-ordered list of game IDs for static route generation.
+ */
+export async function getAllGameIds(db: Database): Promise<number[]> {
+  const rows = await db.select({ id: games.id }).from(games).orderBy(asc(games.title));
+  return rows.map((row) => row.id);
+}
+```
+
 ## Migrations Workflow
 
 1. Edit `schema.ts`.

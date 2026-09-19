@@ -36,6 +36,9 @@ This is a crowdfunding platform for games with a developer theme. The applicatio
 
 - Use TypeScript with explicit types for function parameters and return values, especially in the data layer (`db/`, `src/lib/`)
 - Frontend code (TypeScript, Astro) must pass ESLint checks (`npm run lint`)
+- Keep comments focused on intent, decisions, and constraints; do not restate the code in plain English or leave stale explanations behind.
+- Every exported function in `db/` and `src/lib/` should include TSDoc/JSDoc describing its purpose, `@param` entries, and `@returns`.
+- Reusable `.astro` components should document their `Props` interfaces and keep their contracts clear for contributors.
 
 ### Data Layer Patterns (Drizzle + Node SQLite)
 
