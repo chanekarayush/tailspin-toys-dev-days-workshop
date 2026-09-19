@@ -1,7 +1,7 @@
 import { and, asc, eq, inArray } from 'drizzle-orm';
 import type { Database } from './db';
 import { games, categories, publishers } from '../../db/schema';
-import type { Category, Game, Publisher } from '../types/game';
+import type { CatalogSummary, Category, Game, Publisher } from '../types/game';
 
 export interface GameFilters {
     categoryNames?: readonly string[];
@@ -97,4 +97,25 @@ export async function getAllGameIds(db: Database): Promise<number[]> {
 export async function getGameById(db: Database, id: number): Promise<Game | null> {
     const row = await baseGamesQuery(db).where(eq(games.id, id)).get();
     return row ? mapGame(row) : null;
+}
+
+/** Summary values for the catalog landing page, including a safe average for rated games only. */
+export async function getCatalogSummary(db: Database): Promise<CatalogSummary> {
+    const allGames = await getAllGames(db);
+    const ratedGames = allGames.filter((game) => game.starRating !== null);
+
+    if (allGames.length === 0) {
+        return { totalGames: 0, averageRating: null };
+    }
+
+    if (ratedGames.length === 0) {
+        return { totalGames: allGames.length, averageRating: null };
+    }
+
+    const averageRating = ratedGames.reduce((sum, game) => sum + (game.starRating ?? 0), 0) / ratedGames.length;
+
+    return {
+        totalGames: allGames.length,
+        averageRating: Number(averageRating.toFixed(2)),
+    };
 }

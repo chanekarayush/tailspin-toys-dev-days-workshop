@@ -62,7 +62,9 @@ npm run preview
 The home page catalog can be filtered by selecting one or more categories and
 optionally choosing a publisher. Filters combine so users can narrow results
 without leaving the statically generated page; the clear button restores the
-full catalog.
+full catalog. The landing page also summarizes the database with the total game
+count and the average star rating across rated titles, while handling empty or
+unrated catalog states gracefully.
 
 ## Database
 

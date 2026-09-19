@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import { eq } from 'drizzle-orm';
 import { createTestDatabase } from '../../db/test-helpers';
 import { categories, publishers, games } from '../../db/schema';
 import type { Database } from './db';
@@ -8,6 +9,7 @@ import {
     getAllGameIds,
     getGameById,
     getAllPublishers,
+    getCatalogSummary,
 } from './games';
 
 async function seedGames(db: Database, count: number): Promise<void> {
@@ -60,6 +62,27 @@ describe('games data-access helpers', () => {
         const ids = await getAllGameIds(db);
         const all = await getAllGames(db);
         expect(ids).toEqual(all.map((g) => g.id));
+    });
+
+    it('returns the catalog summary for rated games', async () => {
+        await seedGames(db, 3);
+        const summary = await getCatalogSummary(db);
+
+        expect(summary).toEqual({ totalGames: 3, averageRating: 4.2 });
+    });
+
+    it('returns a null average when no games have ratings', async () => {
+        await seedGames(db, 2);
+        await db.update(games).set({ starRating: null }).where(eq(games.title, 'Game 01'));
+        await db.update(games).set({ starRating: null }).where(eq(games.title, 'Game 02'));
+
+        const summary = await getCatalogSummary(db);
+
+        expect(summary).toEqual({ totalGames: 2, averageRating: null });
+    });
+
+    it('returns zero and null values for an empty catalog', async () => {
+        expect(await getCatalogSummary(db)).toEqual({ totalGames: 0, averageRating: null });
     });
 
     it('filters games by one or more categories', async () => {
