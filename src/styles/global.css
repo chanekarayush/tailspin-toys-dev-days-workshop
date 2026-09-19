@@ -1,1 +1,120 @@
 @import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  --color-bg: #0d1117;
+  --color-bg-subtle: #161b22;
+  --color-surface: #161b22;
+  --color-surface-muted: #0f172a;
+  --color-surface-subtle: #111827;
+  --color-text-primary: #f0f6fc;
+  --color-text-secondary: #c9d1d9;
+  --color-text-muted: #a8b3bf;
+  --color-border-default: #30363d;
+  --color-border-subtle: #21262d;
+  --color-accent: #2f81f7;
+  --color-accent-hover: #58a6ff;
+  --color-accent-strong: #1f6feb;
+  --color-link: #58a6ff;
+  --color-focus: #1f6feb;
+  --color-success: #238636;
+  --color-success-bg: #dafbe1;
+  --color-success-text: #1a7f37;
+  --color-warning: #bf8700;
+  --color-warning-bg: #fff8c5;
+  --color-warning-text: #9a6700;
+  --color-danger: #cf222e;
+  --color-danger-bg: #ffebe9;
+  --color-danger-text: #a40e26;
+  --shadow-card: 0 12px 28px rgba(1, 4, 9, 0.28);
+  --shadow-elevated: 0 18px 40px rgba(1, 4, 9, 0.38);
+}
+
+html.light {
+  color-scheme: light;
+  --color-bg: #f6f8fa;
+  --color-bg-subtle: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f6f8fa;
+  --color-surface-subtle: #eef2f7;
+  --color-text-primary: #24292f;
+  --color-text-secondary: #424a53;
+  --color-text-muted: #59636e;
+  --color-border-default: #d0d7de;
+  --color-border-subtle: #eaeef2;
+  --color-accent: #0969da;
+  --color-accent-hover: #0550ae;
+  --color-accent-strong: #0969da;
+  --color-link: #0969da;
+  --color-focus: #0969da;
+  --color-success: #1a7f37;
+  --color-success-bg: #dafbe1;
+  --color-success-text: #1a7f37;
+  --color-warning: #9a6700;
+  --color-warning-bg: #fff8c5;
+  --color-warning-text: #9a6700;
+  --color-danger: #cf222e;
+  --color-danger-bg: #ffebe9;
+  --color-danger-text: #a40e26;
+  --shadow-card: 0 10px 28px rgba(31, 35, 40, 0.08);
+  --shadow-elevated: 0 18px 34px rgba(31, 35, 40, 0.12);
+}
+
+html {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+body {
+  background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-subtle) 100%);
+  color: var(--color-text-primary);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 35%, transparent);
+}
+
+@layer base {
+  a {
+    color: var(--color-link);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--color-accent-hover);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .theme-panel {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border-default);
+    box-shadow: var(--shadow-card);
+  }
+
+  .theme-panel-subtle {
+    background-color: var(--color-surface-muted);
+    border: 1px solid var(--color-border-default);
+  }
+
+  .theme-surface {
+    background-color: var(--color-surface-subtle);
+  }
+
+  .theme-copy {
+    color: var(--color-text-secondary);
+  }
+
+  .theme-copy-muted {
+    color: var(--color-text-muted);
+  }
+
+  .theme-heading {
+    color: var(--color-text-primary);
+  }
+}

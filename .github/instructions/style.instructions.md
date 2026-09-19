@@ -15,16 +15,22 @@ This project uses Tailwind CSS v4.1.14 via the `@tailwindcss/vite` plugin.
 - No separate `tailwind.config.js` file is used
 - Configuration is handled through the Vite plugin
 
-## Dark Theme Styling
+## Theme Styling
 
-ALL UI components MUST use dark theme colors:
+The application defaults to a GitHub-inspired dark theme and supports an accessible light
+theme through the `html.light` class. Shared semantic tokens are defined in
+`src/styles/global.css` and should be preferred over hard-coded palette utilities:
 
-### Color Palette
+- Surfaces: `--color-bg`, `--color-surface`, `--color-surface-muted`
+- Text: `--color-text-primary`, `--color-text-secondary`, `--color-text-muted`
+- Borders: `--color-border-default`, `--color-border-subtle`
+- Interaction: `--color-link`, `--color-accent`, `--color-accent-hover`, `--color-focus`
+- Status: `--color-success-*`, `--color-warning-*`, and `--color-danger-*`
 
-- Background colors: `bg-slate-800`, `bg-slate-900`, `bg-slate-950`
-- Text colors: `text-slate-100`, `text-slate-200`, `text-slate-300`
-- Border colors: `border-slate-700`, `border-slate-600`
-- Accent colors for hover/focus states
+Use the `theme-panel`, `theme-panel-subtle`, `theme-heading`, `theme-copy`, and
+`theme-copy-muted` utility classes for shared content surfaces and typography. Status
+messages must include text or an icon/label in addition to color so meaning is never
+communicated by hue alone. Keep contrast at WCAG 2.1 AA levels in both modes.
 
 ### Common Patterns
 
