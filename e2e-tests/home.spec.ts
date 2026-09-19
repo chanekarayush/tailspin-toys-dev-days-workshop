@@ -24,4 +24,20 @@ test.describe('Home Page', () => {
     // Check that the welcome message is present using more specific locator
     await expect(page.getByText('Find your next game! And maybe even back one! Explore our collection!')).toBeVisible();
   });
+
+  test('should filter games by category and publisher', async ({ page }) => {
+    const status = page.getByTestId('filter-status');
+    const cards = page.getByTestId('game-card');
+
+    await expect(status).toContainText('Showing 21 games');
+    await page.getByLabel('Strategy').check();
+    await expect(status).toContainText('Showing 4 games');
+
+    await page.getByTestId('filter-publisher').selectOption({ label: 'CodeForge Studios' });
+    await expect(status).toContainText('Showing 1 game');
+
+    await page.getByTestId('filter-reset').click();
+    await expect(status).toContainText('Showing 21 games');
+    await expect(cards).toHaveCount(21);
+  });
 });
