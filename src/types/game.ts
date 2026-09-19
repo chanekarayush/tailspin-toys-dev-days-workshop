@@ -25,3 +25,9 @@ export interface Game {
     category: Category | null;
     starRating: number | null;
 }
+
+/** Summary values for the catalog landing page. */
+export interface CatalogSummary {
+    totalGames: number;
+    averageRating: number | null;
+}
