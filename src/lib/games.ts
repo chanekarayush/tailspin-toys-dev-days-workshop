@@ -1,7 +1,12 @@
-import { eq, asc } from 'drizzle-orm';
+import { and, asc, eq, inArray } from 'drizzle-orm';
 import type { Database } from './db';
 import { games, categories, publishers } from '../../db/schema';
 import type { Category, Game, Publisher } from '../types/game';
+
+export interface GameFilters {
+    categoryNames?: readonly string[];
+    publisherName?: string;
+}
 
 const gameSelection = {
     id: games.id,
@@ -50,18 +55,34 @@ function baseGamesQuery(db: Database) {
         .leftJoin(publishers, eq(games.publisherId, publishers.id));
 }
 
+function filterConditions(filters: GameFilters) {
+    const conditions = [];
+
+    if (filters.categoryNames && filters.categoryNames.length > 0) {
+        conditions.push(inArray(categories.name, filters.categoryNames));
+    }
+
+    if (filters.publisherName) {
+        conditions.push(eq(publishers.name, filters.publisherName));
+    }
+
+    return conditions.length > 0 ? and(...conditions) : undefined;
+}
+
 /** All games ordered by title. */
-export async function getAllGames(db: Database): Promise<Game[]> {
-    const rows = await baseGamesQuery(db).orderBy(asc(games.title));
+export async function getAllGames(db: Database, filters: GameFilters = {}): Promise<Game[]> {
+    const query = baseGamesQuery(db);
+    const conditions = filterConditions(filters);
+    const rows = await (conditions ? query.where(conditions) : query).orderBy(asc(games.title));
     return rows.map(mapGame);
 }
 
-/** All categories ordered alphabetically. */
+/** All categories ordered by name. */
 export async function getAllCategories(db: Database): Promise<Category[]> {
     return db.select({ id: categories.id, name: categories.name }).from(categories).orderBy(asc(categories.name));
 }
 
-/** All publishers ordered alphabetically. */
+/** All publishers ordered by name. */
 export async function getAllPublishers(db: Database): Promise<Publisher[]> {
     return db.select({ id: publishers.id, name: publishers.name }).from(publishers).orderBy(asc(publishers.name));
 }
