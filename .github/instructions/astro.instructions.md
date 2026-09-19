@@ -32,6 +32,24 @@ const games = await getAllGames(getDatabase());
 </Layout>
 ```
 
+## Commenting and component contracts
+
+- Comment the intent behind a component or branch, not the mechanics of the code that the reader can already see.
+- Delete comments that merely restate the next line or explain obvious JSX/TypeScript behavior.
+- Reserve comments for non-obvious decisions, business constraints, accessibility trade-offs, or the reason a static build is using a particular pattern.
+- Document reusable component API contracts in frontmatter: define a `Props` interface and, when helpful, add a short JSDoc description above it to explain what the component expects and why.
+
+```astro
+---
+interface Props {
+  /** A marketable title displayed in the page shell. */
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+```
+
 ## Layouts
 
 - Create reusable layout components in `src/layouts/`

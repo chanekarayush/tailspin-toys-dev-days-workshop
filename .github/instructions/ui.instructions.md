@@ -51,6 +51,13 @@ Refer to technology-specific instruction files:
 - Use props for configuration, not duplication
 - Document component APIs with TypeScript types
 
+### Commenting and Props documentation
+
+- Explain why a component exists or why a particular UI decision was made, not what the JSX already says.
+- Reusable `.astro` components should define a `Props` interface in frontmatter and document it with clear property names and, when helpful, short JSDoc comments for the non-obvious inputs.
+- Remove comments that simply mirror the markup or paraphrase the prop names.
+- Keep documentation aligned with the actual behavior — when a prop changes, update the component contract in the same change.
+
 ## Development Workflow
 
 1. **Choose the right tool**: 

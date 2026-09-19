@@ -15,6 +15,18 @@ The database is migrated and seeded automatically before `dev`/`build` (via the 
 
 The home page supports filtering the catalog by one or more categories and by publisher. Filters update the statically rendered catalog in the browser, so no backend service is required.
 
+## Coding standards
+
+This repository follows a single documentation convention for comments and component contracts:
+
+- Comment the intent, decision, or constraint — not the mechanics of the code that are already visible.
+- Remove stale or redundant comments alongside the code they describe.
+- Exported functions in `db/` and `src/lib/` should include TSDoc/JSDoc with a purpose summary, `@param` entries, and `@returns`.
+- Reusable `.astro` components should document their `Props` interfaces and keep the API contract easy to understand.
+- TypeScript formatting stays consistent with the project’s conventions: 2-space indentation, semicolons, trailing commas in multiline structures, and explicit types for exported data-layer helpers.
+
+The repository guidance lives in the `.github/instructions/` directory, and the project-wide contributor instructions are in [`.github/copilot-instructions.md`](.github/copilot-instructions.md).
+
 ## Using this template
 
 This repository is a GitHub template. When you create a new repository from it, a one-time **Bootstrap template issues** workflow (`.github/workflows/bootstrap-issues.yml`) runs automatically on the first push to `main` and opens a set of starter issues describing suggested first features. Each issue is defined by a Markdown file in `.github/bootstrap-issues/` — the first heading becomes the issue title and the remaining content becomes the body — so you can edit, add, or remove files there to control which issues are created.

@@ -46,6 +46,17 @@ ALL UI components MUST use dark theme colors:
 - Use semantic grouping: layout, spacing, colors, typography
 - Keep utility combinations readable and maintainable
 
+## Commenting and TypeScript formatting
+
+- Comment the decision or constraint, not the implementation detail that is already obvious from the code.
+- Prefer concise, intentional comments and delete anything that restates the surrounding code.
+- TypeScript formatting should stay consistent with the repository: 2-space indentation, semicolons, trailing commas in multiline objects/arrays, and quoted string literals using single quotes unless the surrounding code clearly uses a different convention.
+- For exported TypeScript functions in `db/` and `src/lib/`, include an explicit return type and a JSDoc description that names the behavior, important parameters, and output.
+- Keep comments current when logic changes; outdated comments are treated like broken documentation.
+
+> [!NOTE]
+> ESLint currently enforces the repo’s TypeScript safety defaults (`no-unused-vars`, recommended TS rules), and we keep the style rules small and predictable so they don’t fight the app’s existing patterns.
+
 ## Modern UI Patterns
 
 - Rounded corners: `rounded-lg`, `rounded-xl`, `rounded-2xl`
