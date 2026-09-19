@@ -4,7 +4,9 @@ import { categories, publishers, games } from '../../db/schema';
 import type { Database } from './db';
 import {
     getAllGames,
+    getAllCategories,
     getAllGameIds,
+    getAllPublishers,
     getGameById,
 } from './games';
 
@@ -50,6 +52,21 @@ describe('games data-access helpers', () => {
         const ids = await getAllGameIds(db);
         const all = await getAllGames(db);
         expect(ids).toEqual(all.map((g) => g.id));
+    });
+
+    it('returns filter options ordered alphabetically', async () => {
+        await seedGames(db, 1);
+        await db.insert(categories).values({ name: 'Adventure', description: 'cat' });
+        await db.insert(publishers).values({ name: 'Another Pub', description: 'pub' });
+
+        expect(await getAllCategories(db)).toEqual([
+            { id: expect.any(Number), name: 'Adventure' },
+            { id: expect.any(Number), name: 'Strategy' },
+        ]);
+        expect(await getAllPublishers(db)).toEqual([
+            { id: expect.any(Number), name: 'Another Pub' },
+            { id: expect.any(Number), name: 'Pub One' },
+        ]);
     });
 
     it('fetches a single game by id', async () => {
