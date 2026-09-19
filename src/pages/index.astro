@@ -31,9 +31,21 @@ const publishers = await getAllPublishers(database);
           <form
             class="mb-8 grid gap-6 rounded-xl border border-slate-700 bg-slate-800/60 p-6 shadow-lg md:grid-cols-[1fr_16rem] md:items-start"
             data-testid="game-filters"
+            role="search"
             aria-describedby="filter-description"
           >
             <div>
+              <label for="game-search" class="mb-2 block text-lg font-medium text-slate-100">Search games by title</label>
+              <input
+                id="game-search"
+                name="title"
+                type="search"
+                placeholder="Search by title"
+                autocomplete="off"
+                data-testid="game-search-input"
+                class="mb-6 w-full rounded-lg border border-slate-600 bg-slate-800 px-4 py-3 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+
               <fieldset>
                 <legend class="mb-2 text-lg font-medium text-slate-100">Filter by category</legend>
                 <p id="filter-description" class="mb-4 text-sm text-slate-400">
@@ -77,9 +89,12 @@ const publishers = await getAllPublishers(database);
             </div>
           </form>
 
-          <p class="mb-4 text-sm text-slate-400" data-testid="filter-results-count" aria-live="polite">
+          <p class="mb-4 text-sm text-slate-400" data-testid="filter-results-count" role="status" aria-live="polite">
             Showing {games.length} {games.length === 1 ? 'game' : 'games'}
           </p>
+          <span class="sr-only" data-testid="game-search-status" aria-live="polite">
+            Showing {games.length} {games.length === 1 ? 'game' : 'games'}
+          </span>
 
           <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" data-testid="games-grid">
             {games.map((game) => (
@@ -98,7 +113,9 @@ const publishers = await getAllPublishers(database);
             role="status"
             aria-live="polite"
           >
-            <EmptyState text="No games match your selected filters. Try clearing a filter or choosing another option." />
+            <div data-testid="game-search-no-results">
+              <EmptyState text="No games match your search." />
+            </div>
           </div>
         </>
       )}
@@ -111,30 +128,41 @@ const publishers = await getAllPublishers(database);
   const cards = [...document.querySelectorAll<HTMLElement>('[data-game-card-wrapper]')];
   const emptyState = document.querySelector<HTMLElement>('[data-testid="filtered-empty-state"]');
   const resultCount = document.querySelector<HTMLElement>('[data-testid="filter-results-count"]');
+  const searchStatus = document.querySelector<HTMLElement>('[data-testid="game-search-status"]');
 
-  if (filterForm && emptyState && resultCount) {
+  if (filterForm && emptyState && resultCount && searchStatus) {
+    const searchInput = filterForm.querySelector<HTMLInputElement>('[data-testid="game-search-input"]');
     const categoryFilters = [...filterForm.querySelectorAll<HTMLInputElement>('input[name="category"]')];
     const publisherFilter = filterForm.querySelector<HTMLSelectElement>('select[name="publisher"]');
 
     const updateResults = (): void => {
+      const query = searchInput?.value.trim().toLocaleLowerCase() ?? '';
       const selectedCategories = categoryFilters.filter((filter) => filter.checked).map((filter) => filter.value);
       const selectedPublisher = publisherFilter?.value ?? '';
       let visibleCount = 0;
 
       cards.forEach((card) => {
+        const titleMatches = (card.querySelector<HTMLElement>('[data-game-title]')?.dataset.gameTitle ?? '')
+          .toLocaleLowerCase()
+          .includes(query);
         const categoryMatches =
           selectedCategories.length === 0 || selectedCategories.includes(card.dataset.categoryId ?? '');
         const publisherMatches = selectedPublisher === '' || selectedPublisher === card.dataset.publisherId;
-        const isVisible = categoryMatches && publisherMatches;
+        const isVisible = titleMatches && categoryMatches && publisherMatches;
 
         card.hidden = !isVisible;
         if (isVisible) visibleCount += 1;
       });
 
       emptyState.classList.toggle('hidden', visibleCount > 0);
-      resultCount.textContent = `Showing ${visibleCount} ${visibleCount === 1 ? 'game' : 'games'}`;
+      const statusText = query
+        ? `${visibleCount} ${visibleCount === 1 ? 'game' : 'games'} found`
+        : `Showing ${visibleCount} ${visibleCount === 1 ? 'game' : 'games'}`;
+      resultCount.textContent = statusText;
+      searchStatus.textContent = statusText;
     };
 
+    filterForm.addEventListener('input', updateResults);
     filterForm.addEventListener('change', updateResults);
     filterForm.addEventListener('reset', () => requestAnimationFrame(updateResults));
   }
