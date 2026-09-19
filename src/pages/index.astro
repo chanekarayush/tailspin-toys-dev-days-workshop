@@ -4,11 +4,14 @@ import GameCard from '../components/GameCard.astro';
 import PageHero from '../components/PageHero.astro';
 import EmptyState from '../components/EmptyState.astro';
 import { getDatabase } from '../lib/db';
-import { getAllGames } from '../lib/games';
+import { getAllCategories, getAllGames, getAllPublishers } from '../lib/games';
 
 export const prerender = true;
 
-const games = await getAllGames(getDatabase());
+const database = getDatabase();
+const games = await getAllGames(database);
+const categories = await getAllCategories(database);
+const publishers = await getAllPublishers(database);
 ---
 
 <Layout title="Tailspin Toys - Crowdfunding your new favorite game!">
@@ -24,10 +27,115 @@ const games = await getAllGames(getDatabase());
       {games.length === 0 ? (
         <EmptyState text="No games available at the moment." />
       ) : (
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" data-testid="games-grid">
-          {games.map((game) => <GameCard game={game} />)}
-        </div>
+        <>
+          <form
+            class="mb-8 grid gap-6 rounded-xl border border-slate-700 bg-slate-800/60 p-6 shadow-lg md:grid-cols-[1fr_16rem] md:items-start"
+            data-testid="game-filters"
+            aria-describedby="filter-description"
+          >
+            <div>
+              <fieldset>
+                <legend class="mb-2 text-lg font-medium text-slate-100">Filter by category</legend>
+                <p id="filter-description" class="mb-4 text-sm text-slate-400">
+                  Select one or more categories. Results can also be narrowed by publisher.
+                </p>
+                <div class="flex flex-wrap gap-3">
+                  {categories.map((category) => (
+                    <label class="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-600 px-3 py-2 text-sm text-slate-200 transition-colors hover:border-blue-400 focus-within:ring-2 focus-within:ring-blue-500">
+                      <input
+                        type="checkbox"
+                        name="category"
+                        value={category.id}
+                        class="h-4 w-4 accent-blue-500"
+                        data-testid={`category-filter-${category.id}`}
+                      />
+                      <span>{category.name}</span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label for="publisher-filter" class="text-lg font-medium text-slate-100">Filter by publisher</label>
+              <select
+                id="publisher-filter"
+                name="publisher"
+                class="rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-slate-100 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                data-testid="publisher-filter"
+              >
+                <option value="">All publishers</option>
+                {publishers.map((publisher) => <option value={publisher.id}>{publisher.name}</option>)}
+              </select>
+              <button
+                type="reset"
+                class="mt-2 self-start rounded-lg border border-slate-600 px-3 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                data-testid="clear-filters"
+              >
+                Clear filters
+              </button>
+            </div>
+          </form>
+
+          <p class="mb-4 text-sm text-slate-400" data-testid="filter-results-count" aria-live="polite">
+            Showing {games.length} {games.length === 1 ? 'game' : 'games'}
+          </p>
+
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" data-testid="games-grid">
+            {games.map((game) => (
+              <div
+                data-game-card-wrapper
+                data-category-id={game.category?.id ?? ''}
+                data-publisher-id={game.publisher?.id ?? ''}
+              >
+                <GameCard game={game} />
+              </div>
+            ))}
+          </div>
+          <div
+            class="hidden"
+            data-testid="filtered-empty-state"
+            role="status"
+            aria-live="polite"
+          >
+            <EmptyState text="No games match your selected filters. Try clearing a filter or choosing another option." />
+          </div>
+        </>
       )}
     </div>
   </div>
 </Layout>
+
+<script>
+  const filterForm = document.querySelector<HTMLFormElement>('[data-testid="game-filters"]');
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-game-card-wrapper]')];
+  const emptyState = document.querySelector<HTMLElement>('[data-testid="filtered-empty-state"]');
+  const resultCount = document.querySelector<HTMLElement>('[data-testid="filter-results-count"]');
+
+  if (filterForm && emptyState && resultCount) {
+    const categoryFilters = [...filterForm.querySelectorAll<HTMLInputElement>('input[name="category"]')];
+    const publisherFilter = filterForm.querySelector<HTMLSelectElement>('select[name="publisher"]');
+
+    const updateResults = (): void => {
+      const selectedCategories = categoryFilters.filter((filter) => filter.checked).map((filter) => filter.value);
+      const selectedPublisher = publisherFilter?.value ?? '';
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const categoryMatches =
+          selectedCategories.length === 0 || selectedCategories.includes(card.dataset.categoryId ?? '');
+        const publisherMatches = selectedPublisher === '' || selectedPublisher === card.dataset.publisherId;
+        const isVisible = categoryMatches && publisherMatches;
+
+        card.hidden = !isVisible;
+        if (isVisible) visibleCount += 1;
+      });
+
+      emptyState.classList.toggle('hidden', visibleCount > 0);
+      resultCount.textContent = `Showing ${visibleCount} ${visibleCount === 1 ? 'game' : 'games'}`;
+    };
+
+    filterForm.addEventListener('change', updateResults);
+    filterForm.addEventListener('reset', () => requestAnimationFrame(updateResults));
+  }
+</script>
