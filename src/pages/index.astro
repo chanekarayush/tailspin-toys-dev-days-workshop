@@ -24,10 +24,86 @@ const games = await getAllGames(getDatabase());
       {games.length === 0 ? (
         <EmptyState text="No games available at the moment." />
       ) : (
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" data-testid="games-grid">
-          {games.map((game) => <GameCard game={game} />)}
-        </div>
+        <>
+          <form
+            class="mb-8 max-w-xl"
+            data-testid="game-search-form"
+            role="search"
+          >
+            <label for="game-search" class="block text-sm font-medium text-slate-200 mb-2">
+              Search games by title
+            </label>
+            <div class="flex flex-col sm:flex-row gap-3">
+              <input
+                id="game-search"
+                name="title"
+                type="search"
+                placeholder="Search by title"
+                autocomplete="off"
+                data-testid="game-search-input"
+                class="flex-1 rounded-lg border border-slate-600 bg-slate-800 px-4 py-3 text-slate-100 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              />
+              <button
+                type="submit"
+                data-testid="game-search-submit"
+                class="rounded-lg bg-blue-600 px-5 py-3 font-medium text-white transition-colors hover:bg-blue-500 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              >
+                Search
+              </button>
+            </div>
+          </form>
+
+          <p
+            class="mb-6 text-sm text-slate-400"
+            data-testid="game-search-status"
+            role="status"
+            aria-live="polite"
+          >
+            Showing {games.length} {games.length === 1 ? 'game' : 'games'}
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" data-testid="games-grid">
+            {games.map((game) => <GameCard game={game} />)}
+          </div>
+
+          <div hidden data-testid="game-search-no-results">
+            <EmptyState text="No games match your search." />
+          </div>
+        </>
       )}
     </div>
   </div>
 </Layout>
+
+<script>
+  const searchForm = document.querySelector<HTMLFormElement>('[data-testid="game-search-form"]');
+  const searchInput = document.querySelector<HTMLInputElement>('[data-testid="game-search-input"]');
+  const searchStatus = document.querySelector<HTMLElement>('[data-testid="game-search-status"]');
+  const noResults = document.querySelector<HTMLElement>('[data-testid="game-search-no-results"]');
+  const gameCards = Array.from(document.querySelectorAll<HTMLElement>('[data-testid="game-card"]'));
+
+  if (searchForm && searchInput && searchStatus && noResults) {
+    const updateResults = (): void => {
+      const query = searchInput.value.trim().toLocaleLowerCase();
+      const matchingCards = gameCards.filter((card) =>
+        (card.dataset.gameTitle ?? '').toLocaleLowerCase().includes(query),
+      );
+
+      gameCards.forEach((card) => {
+        card.hidden = !matchingCards.includes(card);
+      });
+
+      const resultCount = matchingCards.length;
+      searchStatus.textContent = query
+        ? `${resultCount} ${resultCount === 1 ? 'game' : 'games'} found`
+        : `Showing ${gameCards.length} ${gameCards.length === 1 ? 'game' : 'games'}`;
+      noResults.hidden = resultCount > 0;
+    };
+
+    searchInput.addEventListener('input', updateResults);
+    searchForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      updateResults();
+    });
+  }
+</script>
