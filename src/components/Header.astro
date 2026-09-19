@@ -2,30 +2,66 @@
 import Menu from '../assets/icons/menu.svg';
 ---
 
-<header class="bg-blue-500 dark:bg-blue-700 text-white p-4 shadow-md transition-colors duration-300">
-  <div class="container mx-auto flex justify-between items-center pl-4 pr-4">
+<header class="border-b border-[var(--color-border-default)] bg-[var(--color-surface)]/95 text-[var(--color-text-primary)] p-4 shadow-[var(--shadow-card)] transition-colors duration-300 backdrop-blur-sm">
+  <div class="container mx-auto flex items-center justify-between gap-4 pl-4 pr-4">
     <div class="flex items-center">
       <div class="relative group">
-        <button id="menu-toggle" class="focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-blue-500 rounded mr-4" aria-label="Toggle menu" aria-expanded="false" aria-controls="menu">
-          <Menu class="h-6 w-6" aria-hidden="true" />
+        <button
+          id="menu-toggle"
+          class="mr-4 rounded-md border border-[var(--color-border-default)] bg-[var(--color-surface-muted)] p-2 text-[var(--color-text-primary)] transition-colors duration-200 hover:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus)] focus:ring-offset-2 focus:ring-offset-[var(--color-bg)]"
+          aria-label="Toggle menu"
+          aria-expanded="false"
+          aria-controls="menu"
+          data-testid="menu-toggle"
+        >
+          <Menu class="h-5 w-5" aria-hidden="true" />
         </button>
-        <nav id="menu" aria-label="Main" class="hidden absolute left-0 mt-2 w-48 bg-white dark:bg-slate-800 text-slate-800 dark:text-white rounded shadow-lg z-10 transition-colors duration-300">
-          <ul class="py-1">
-            <li><a href="/" class="block px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700">Home</a></li>
-            <li><a href="/about" class="block px-4 py-2 hover:bg-slate-100 dark:hover:bg-slate-700">About</a></li>
+        <nav id="menu" aria-label="Main" class="absolute left-0 z-20 mt-2 hidden w-48 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-surface)] p-2 shadow-[var(--shadow-elevated)]">
+          <ul class="space-y-1">
+            <li><a href="/" class="block rounded-md px-3 py-2 text-sm font-medium text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-link)]">Home</a></li>
+            <li><a href="/about" class="block rounded-md px-3 py-2 text-sm font-medium text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-link)]">About</a></li>
           </ul>
         </nav>
       </div>
-      <div class="text-xl font-bold"><a href="/" class="hover:underline">Tailspin Toys</a></div>
+      <div class="text-xl font-bold"><a href="/" class="text-[var(--color-text-primary)] hover:text-[var(--color-link)]">Tailspin Toys</a></div>
     </div>
+
+    <button
+      id="theme-toggle"
+      type="button"
+      class="inline-flex items-center gap-2 rounded-md border border-[var(--color-border-default)] bg-[var(--color-surface-muted)] px-3 py-2 text-sm font-medium text-[var(--color-text-primary)] transition-colors duration-200 hover:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus)] focus:ring-offset-2 focus:ring-offset-[var(--color-bg)]"
+      aria-label="Toggle light and dark mode"
+      data-testid="theme-toggle"
+    >
+      <span id="theme-label">Light mode</span>
+    </button>
   </div>
 </header>
 
 <script>
-  // Toggle menu visibility when hamburger is clicked
   const menuToggle = document.getElementById('menu-toggle');
   const menu = document.getElementById('menu');
-  
+  const themeToggle = document.getElementById('theme-toggle');
+  const themeLabel = document.getElementById('theme-label');
+  const root = document.documentElement;
+
+  const applyTheme = (theme: string): void => {
+    const nextTheme = theme === 'light' ? 'light' : 'dark';
+    root.classList.toggle('light', nextTheme === 'light');
+    root.classList.toggle('dark', nextTheme === 'dark');
+    if (themeLabel) {
+      themeLabel.textContent = nextTheme === 'light' ? 'Light mode' : 'Dark mode';
+    }
+    if (themeToggle) {
+      themeToggle.setAttribute('aria-label', nextTheme === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
+    }
+    localStorage.setItem('tailspin-theme', nextTheme);
+  };
+
+  const storedTheme = localStorage.getItem('tailspin-theme');
+  const preferredTheme = storedTheme || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+  applyTheme(preferredTheme);
+
   if (menuToggle && menu) {
     menuToggle.addEventListener('click', () => {
       menu.classList.toggle('hidden');
@@ -36,8 +72,7 @@ import Menu from '../assets/icons/menu.svg';
         if (firstLink) firstLink.focus();
       }
     });
-    
-    // Close menu when clicking outside
+
     document.addEventListener('click', (event) => {
       const target = event.target;
       const isClickInside = target instanceof Node && (menuToggle.contains(target) || menu.contains(target));
@@ -47,13 +82,19 @@ import Menu from '../assets/icons/menu.svg';
       }
     });
 
-    // Close menu with Escape key and return focus to toggle button
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' && !menu.classList.contains('hidden')) {
         menu.classList.add('hidden');
         menuToggle.setAttribute('aria-expanded', 'false');
         menuToggle.focus();
       }
+    });
+  }
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const nextTheme = root.classList.contains('light') ? 'dark' : 'light';
+      applyTheme(nextTheme);
     });
   }
 </script>

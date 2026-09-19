@@ -23,36 +23,36 @@ const catalogSummary = await getCatalogSummary(database);
     />
 
     <div class="mb-8 grid gap-4 md:grid-cols-2" data-testid="catalog-summary" aria-label="Catalog summary">
-      <div class="rounded-xl border border-slate-700 bg-slate-800/80 p-6 shadow-lg">
-        <p class="text-sm font-medium uppercase tracking-[0.12em] text-slate-400">Games in catalog</p>
-        <p class="mt-3 text-3xl font-semibold text-slate-100" data-testid="catalog-total-games">
+      <div class="theme-panel rounded-xl p-6">
+        <p class="theme-copy-muted text-sm font-medium uppercase tracking-[0.12em]">Games in catalog</p>
+        <p class="theme-heading mt-3 text-3xl font-semibold" data-testid="catalog-total-games">
           {catalogSummary.totalGames}
         </p>
       </div>
 
-      <div class="rounded-xl border border-slate-700 bg-slate-800/80 p-6 shadow-lg">
-        <p class="text-sm font-medium uppercase tracking-[0.12em] text-slate-400">Average rating</p>
-        <p class="mt-3 text-3xl font-semibold text-slate-100" data-testid="catalog-average-rating">
+      <div class="theme-panel rounded-xl p-6">
+        <p class="theme-copy-muted text-sm font-medium uppercase tracking-[0.12em]">Average rating</p>
+        <p class="theme-heading mt-3 text-3xl font-semibold" data-testid="catalog-average-rating">
           {catalogSummary.averageRating === null ? 'No ratings yet' : `${catalogSummary.averageRating.toFixed(2)} / 5`}
         </p>
       </div>
     </div>
 
     <div>
-      <h2 class="text-2xl font-medium mb-6 text-slate-100">Featured Games</h2>
+      <h2 class="theme-heading mb-6 text-2xl font-medium">Featured Games</h2>
 
       {games.length === 0 ? (
         <EmptyState text="No games available at the moment." />
       ) : (
         <>
           <form
-            class="mb-8 grid gap-6 rounded-xl border border-slate-700 bg-slate-800/60 p-6 shadow-lg md:grid-cols-[1fr_16rem] md:items-start"
+            class="theme-panel-subtle mb-8 grid gap-6 rounded-xl p-6 md:grid-cols-[1fr_16rem] md:items-start"
             data-testid="game-filters"
             role="search"
             aria-describedby="filter-description"
           >
             <div>
-              <label for="game-search" class="mb-2 block text-lg font-medium text-slate-100">Search games by title</label>
+              <label for="game-search" class="theme-heading mb-2 block text-lg font-medium">Search games by title</label>
               <input
                 id="game-search"
                 name="title"
@@ -60,22 +60,22 @@ const catalogSummary = await getCatalogSummary(database);
                 placeholder="Search by title"
                 autocomplete="off"
                 data-testid="game-search-input"
-                class="mb-6 w-full rounded-lg border border-slate-600 bg-slate-800 px-4 py-3 text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="mb-6 w-full rounded-lg border border-[var(--color-border-default)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus)]"
               />
 
               <fieldset>
-                <legend class="mb-2 text-lg font-medium text-slate-100">Filter by category</legend>
-                <p id="filter-description" class="mb-4 text-sm text-slate-400">
+                <legend class="theme-heading mb-2 text-lg font-medium">Filter by category</legend>
+                <p id="filter-description" class="theme-copy-muted mb-4 text-sm">
                   Select one or more categories. Results can also be narrowed by publisher.
                 </p>
                 <div class="flex flex-wrap gap-3">
                   {categories.map((category) => (
-                    <label class="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-600 px-3 py-2 text-sm text-slate-200 transition-colors hover:border-blue-400 focus-within:ring-2 focus-within:ring-blue-500">
+                    <label class="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--color-border-default)] px-3 py-2 text-sm text-[var(--color-text-secondary)] transition-colors hover:border-[var(--color-accent)] focus-within:ring-2 focus-within:ring-[var(--color-focus)]">
                       <input
                         type="checkbox"
                         name="category"
                         value={category.id}
-                        class="h-4 w-4 accent-blue-500"
+                        class="h-4 w-4 accent-[var(--color-accent)]"
                         data-testid={`category-filter-${category.id}`}
                       />
                       <span>{category.name}</span>
@@ -86,11 +86,11 @@ const catalogSummary = await getCatalogSummary(database);
             </div>
 
             <div class="flex flex-col gap-2">
-              <label for="publisher-filter" class="text-lg font-medium text-slate-100">Filter by publisher</label>
+              <label for="publisher-filter" class="theme-heading text-lg font-medium">Filter by publisher</label>
               <select
                 id="publisher-filter"
                 name="publisher"
-                class="rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-slate-100 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="rounded-lg border border-[var(--color-border-default)] bg-[var(--color-surface)] px-3 py-2 text-[var(--color-text-primary)] focus:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus)]"
                 data-testid="publisher-filter"
               >
                 <option value="">All publishers</option>
@@ -98,7 +98,7 @@ const catalogSummary = await getCatalogSummary(database);
               </select>
               <button
                 type="reset"
-                class="mt-2 self-start rounded-lg border border-slate-600 px-3 py-2 text-sm font-medium text-slate-200 transition-colors hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="mt-2 self-start rounded-lg border border-[var(--color-border-default)] px-3 py-2 text-sm font-medium text-[var(--color-text-secondary)] transition-colors hover:bg-[var(--color-surface-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus)]"
                 data-testid="clear-filters"
               >
                 Clear filters
@@ -106,7 +106,7 @@ const catalogSummary = await getCatalogSummary(database);
             </div>
           </form>
 
-          <p class="mb-4 text-sm text-slate-400" data-testid="filter-results-count" role="status" aria-live="polite">
+          <p class="theme-copy-muted mb-4 text-sm" data-testid="filter-results-count" role="status" aria-live="polite">
             Showing {games.length} {games.length === 1 ? 'game' : 'games'}
           </p>
           <span class="sr-only" data-testid="game-search-status" aria-live="polite">
