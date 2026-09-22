@@ -97,6 +97,44 @@ export async function getAllPublishers(db: Database): Promise<Publisher[]> {
         .orderBy(asc(publishers.name));
 }
 
+/**
+ * Returns a publisher and all games associated with it.
+ *
+ * @param db - The Drizzle database instance used for the query.
+ * @param id - The publisher identifier.
+ * @returns The publisher page data, or null when the publisher does not exist.
+ */
+export async function getPublisherById(
+    db: Database,
+    id: number,
+): Promise<{ publisher: Publisher; games: Game[] } | null> {
+    const publisher = await db
+        .select({ id: publishers.id, name: publishers.name, description: publishers.description })
+        .from(publishers)
+        .where(eq(publishers.id, id))
+        .get();
+
+    if (!publisher) {
+        return null;
+    }
+
+    return {
+        publisher,
+        games: await getAllGames(db, { publisherName: publisher.name }),
+    };
+}
+
+/**
+ * Returns all publisher identifiers used to generate static publisher pages.
+ *
+ * @param db - The Drizzle database instance used for the query.
+ * @returns A stable, name-ordered list of publisher IDs.
+ */
+export async function getAllPublisherIds(db: Database): Promise<number[]> {
+    const rows = await db.select({ id: publishers.id }).from(publishers).orderBy(asc(publishers.name));
+    return rows.map((row) => row.id);
+}
+
 /** All game ids ordered by title. */
 export async function getAllGameIds(db: Database): Promise<number[]> {
     const rows = await db.select({ id: games.id }).from(games).orderBy(asc(games.title));

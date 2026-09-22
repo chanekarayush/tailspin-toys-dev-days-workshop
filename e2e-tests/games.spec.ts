@@ -138,6 +138,17 @@ test.describe('Game Listing and Navigation', () => {
       await expect(page.getByTestId('game-details')).toBeVisible();
     });
 
+    test('should navigate to a publisher page from game details', async ({ page }) => {
+      await page.goto('/game/1');
+      await expect(page.getByTestId('game-details-publisher-link')).toBeVisible();
+      await page.getByTestId('game-details-publisher-link').click();
+
+      await expect(page).toHaveURL(/\/publisher\/\d+/);
+      await expect(page.getByTestId('publisher-details')).toBeVisible();
+      await expect(page.getByTestId('publisher-description')).not.toBeEmpty();
+      await expect(page.getByTestId('publisher-games-grid').getByTestId('game-card')).toHaveCount(2);
+    });
+
     await test.step('Click back to all games link', async () => {
       const backLink = page.getByRole('link', { name: /back to all games/i });
       await expect(backLink).toBeVisible();
