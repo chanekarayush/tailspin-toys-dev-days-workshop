@@ -109,6 +109,13 @@ test.describe('Game Listing and Navigation', () => {
         await expect(page.getByTestId('game-details-category')).not.toBeEmpty();
       }
     });
+
+    await test.step('Verify category and publisher descriptions are displayed', async () => {
+      await expect(page.getByTestId('game-details-category-description')).toContainText('About Strategy');
+      await expect(page.getByTestId('game-details-category-description')).toContainText('cat');
+      await expect(page.getByTestId('game-details-publisher-description')).toContainText('About Pub One');
+      await expect(page.getByTestId('game-details-publisher-description')).toContainText('pub');
+    });
   });
 
   test('should display a button to back the game', async ({ page }) => {

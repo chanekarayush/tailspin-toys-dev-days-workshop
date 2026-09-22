@@ -48,6 +48,23 @@ if (!game) {
           )}
         </div>
 
+        {(game.category?.description || game.publisher?.description) && (
+          <div class="mt-6 grid gap-4 md:grid-cols-2">
+            {game.category?.description && (
+              <section class="theme-panel-subtle rounded-xl p-5" data-testid="game-details-category-description">
+                <h2 class="theme-heading mb-2 text-lg font-semibold">About {game.category.name}</h2>
+                <p class="theme-copy">{game.category.description}</p>
+              </section>
+            )}
+            {game.publisher?.description && (
+              <section class="theme-panel-subtle rounded-xl p-5" data-testid="game-details-publisher-description">
+                <h2 class="theme-heading mb-2 text-lg font-semibold">About {game.publisher.name}</h2>
+                <p class="theme-copy">{game.publisher.description}</p>
+              </section>
+            )}
+          </div>
+        )}
+
         <div class="space-y-4 mt-6">
           <h2 class="theme-heading mb-2 text-lg font-semibold">About this game</h2>
           <div class="theme-copy space-y-4">
