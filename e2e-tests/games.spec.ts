@@ -112,9 +112,9 @@ test.describe('Game Listing and Navigation', () => {
 
     await test.step('Verify category and publisher descriptions are displayed', async () => {
       await expect(page.getByTestId('game-details-category-description')).toContainText('About Strategy');
-      await expect(page.getByTestId('game-details-category-description')).toContainText('cat');
-      await expect(page.getByTestId('game-details-publisher-description')).toContainText('About Pub One');
-      await expect(page.getByTestId('game-details-publisher-description')).toContainText('pub');
+      await expect(page.getByTestId('game-details-category-description')).toContainText('Collection of Strategy');
+      await expect(page.getByTestId('game-details-publisher-description')).toContainText('About CodeForge Studios');
+      await expect(page.getByTestId('game-details-publisher-description')).toContainText('CodeForge Studios');
     });
   });
 
