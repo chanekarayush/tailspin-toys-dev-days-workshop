@@ -1,0 +1,183 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHero from '../components/PageHero.astro';
+import Button from '../components/Button.astro';
+import Heart from '../assets/icons/heart.svg';
+
+const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+---
+
+<Layout title="Wishlist - Tailspin Toys">
+  <div class="py-8">
+    <PageHero
+      title="Wishlist"
+      subtitle="Your supported games are queued up for the next big campaign night."
+    />
+
+    <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <p class="arcade-kicker text-xs font-bold uppercase tracking-[0.18em]" data-testid="wishlist-count">0 games saved</p>
+      <button
+        type="button"
+        class="rounded-lg border border-[var(--color-border-default)] bg-[var(--color-surface-muted)] px-4 py-2 text-sm font-medium text-[var(--color-text-primary)] transition-colors duration-200 hover:border-[var(--color-accent)] hover:bg-[var(--color-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus)]"
+        data-testid="clear-wishlist"
+      >
+        Clear all games
+      </button>
+    </div>
+
+    <div
+      id="wishlist-empty"
+      class="theme-panel arcade-outline rounded-2xl p-8 text-center"
+      data-testid="wishlist-empty"
+    >
+      <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-[var(--color-border-default)] bg-[var(--color-surface-muted)]">
+        <Heart class="h-6 w-6 text-[var(--color-arcade-violet)]" aria-hidden="true" />
+      </div>
+      <h2 class="theme-heading mb-3 text-2xl font-bold">No games in your wishlist yet</h2>
+      <p class="theme-copy-muted mx-auto max-w-xl text-base">
+        Tap “Support This Game” on any title to save it here for later.
+      </p>
+      <Button href={baseUrl} class="mt-6">
+        Explore the catalog
+      </Button>
+    </div>
+
+    <div
+      id="wishlist-grid"
+      class="hidden grid gap-6 md:grid-cols-2 xl:grid-cols-3"
+      data-testid="wishlist-grid"
+      aria-live="polite"
+    ></div>
+  </div>
+</Layout>
+
+<script>
+  import { clearWishlist, getWishlist, removeGameFromWishlist } from '../lib/wishlist';
+
+  const emptyState = document.querySelector<HTMLElement>('[data-testid="wishlist-empty"]');
+  const wishlistGrid = document.querySelector<HTMLElement>('[data-testid="wishlist-grid"]');
+  const countLabel = document.querySelector<HTMLElement>('[data-testid="wishlist-count"]');
+  const clearButton = document.querySelector<HTMLButtonElement>('[data-testid="clear-wishlist"]');
+
+  const formatCount = (count: number): string => `${count} ${count === 1 ? 'game' : 'games'} saved`;
+
+  const createWishlistCard = (game: {
+    id: number;
+    title: string;
+    description: string;
+    starRating: number | null;
+    category?: { name?: string } | null;
+    publisher?: { name?: string } | null;
+  }): HTMLElement => {
+    const card = document.createElement('article');
+    card.className = 'theme-panel arcade-outline overflow-hidden rounded-2xl';
+
+    const content = document.createElement('div');
+    content.className = 'p-5';
+
+    const kicker = document.createElement('p');
+    kicker.className = 'arcade-kicker mb-3 text-[0.65rem] font-bold uppercase';
+    kicker.textContent = `Game ${String(game.id).padStart(2, '0')}`;
+
+    const title = document.createElement('h3');
+    title.className = 'theme-heading mb-3 text-xl font-semibold';
+    title.textContent = game.title;
+
+    const meta = document.createElement('div');
+    meta.className = 'mb-3 flex flex-wrap gap-2';
+
+    if (game.category?.name) {
+      const categoryTag = document.createElement('span');
+      categoryTag.className = 'rounded-full border border-[var(--color-border-default)] bg-[var(--color-surface-muted)] px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-wide text-[var(--color-text-secondary)]';
+      categoryTag.textContent = game.category.name;
+      meta.append(categoryTag);
+    }
+
+    if (game.publisher?.name) {
+      const publisherTag = document.createElement('span');
+      publisherTag.className = 'rounded-full border border-[var(--color-border-default)] bg-[var(--color-surface-muted)] px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-wide text-[var(--color-text-secondary)]';
+      publisherTag.textContent = game.publisher.name;
+      meta.append(publisherTag);
+    }
+
+    const description = document.createElement('p');
+    description.className = 'theme-copy-muted mb-4 text-sm';
+    description.textContent = game.description;
+
+    const rating = document.createElement('div');
+    rating.className = 'mb-5';
+    if (game.starRating === null || typeof game.starRating === 'undefined') {
+      const ratingText = document.createElement('span');
+      ratingText.className = 'theme-copy-muted text-sm';
+      ratingText.textContent = 'No rating yet';
+      rating.append(ratingText);
+    } else {
+      const stars = Array.from({ length: 5 }, (_, index) => {
+        const star = document.createElement('span');
+        star.textContent = index < Math.round(game.starRating ?? 0) ? '★' : '☆';
+        star.className = index < Math.round(game.starRating ?? 0) ? 'text-[var(--color-arcade-orange)]' : 'text-[var(--color-text-muted)]';
+        star.setAttribute('aria-hidden', 'true');
+        return star;
+      });
+      stars.forEach((star) => rating.append(star));
+      const count = document.createElement('span');
+      count.className = 'ml-2 theme-copy-muted text-sm';
+      count.textContent = `${(game.starRating ?? 0).toFixed(1)} / 5`;
+      rating.append(count);
+    }
+
+    const removeButton = document.createElement('button');
+    removeButton.type = 'button';
+    removeButton.className = 'inline-flex w-full items-center justify-center rounded-lg border border-[var(--color-border-default)] bg-[var(--color-surface-muted)] px-3 py-2 text-sm font-medium text-[var(--color-text-primary)] transition-colors duration-200 hover:border-[var(--color-danger)] hover:text-[var(--color-danger)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus)]';
+    removeButton.setAttribute('data-testid', `wishlist-remove-${game.id}`);
+    removeButton.setAttribute('aria-label', `Remove ${game.title} from wishlist`);
+    removeButton.textContent = 'Remove';
+    removeButton.addEventListener('click', () => {
+      removeGameFromWishlist(game.id, window.localStorage);
+      window.dispatchEvent(new CustomEvent('tailspin-wishlist-updated'));
+      renderWishlist();
+    });
+
+    content.append(kicker, title, meta, description, rating, removeButton);
+    card.append(content);
+    return card;
+  };
+
+  const renderWishlist = (): void => {
+    const wishlist = getWishlist(window.localStorage);
+
+    if (countLabel) {
+      countLabel.textContent = formatCount(wishlist.length);
+    }
+
+    if (wishlistGrid) {
+      wishlistGrid.innerHTML = '';
+      wishlist.forEach((game) => {
+        wishlistGrid.append(createWishlistCard(game));
+      });
+      wishlistGrid.classList.toggle('hidden', wishlist.length === 0);
+    }
+
+    if (emptyState) {
+      emptyState.classList.toggle('hidden', wishlist.length > 0);
+    }
+
+    if (clearButton) {
+      clearButton.disabled = wishlist.length === 0;
+      clearButton.classList.toggle('opacity-50', wishlist.length === 0);
+      clearButton.classList.toggle('cursor-not-allowed', wishlist.length === 0);
+    }
+  };
+
+  if (clearButton) {
+    clearButton.addEventListener('click', () => {
+      clearWishlist(window.localStorage);
+      window.dispatchEvent(new CustomEvent('tailspin-wishlist-updated'));
+      renderWishlist();
+    });
+  }
+
+  renderWishlist();
+  window.addEventListener('storage', renderWishlist);
+  window.addEventListener('tailspin-wishlist-updated', renderWishlist);
+</script>

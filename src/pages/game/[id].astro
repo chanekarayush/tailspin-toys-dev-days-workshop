@@ -84,9 +84,21 @@ if (!game) {
 
         <div class="mt-8 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-surface-muted)] p-4">
           <p class="theme-copy-muted mb-3 text-sm">Ready to make this your next game night?</p>
-          <Button variant="gradient" fullWidth data-testid="back-game-button">
+          <Button
+            variant="gradient"
+            fullWidth
+            data-testid="back-game-button"
+            data-game-id={game.id}
+            data-game-title={game.title}
+            data-game-description={game.description}
+            data-game-rating={game.starRating ?? ''}
+            data-game-category-id={game.category?.id ?? ''}
+            data-game-category-name={game.category?.name ?? ''}
+            data-game-publisher-id={game.publisher?.id ?? ''}
+            data-game-publisher-name={game.publisher?.name ?? ''}
+          >
             <Heart class="h-5 w-5 mr-2" aria-hidden="true" />
-            Support This Game
+            <span data-testid="support-game-button-label">Support This Game</span>
           </Button>
         </div>
       </div>
@@ -100,3 +112,59 @@ if (!game) {
     </div>
   </div>
 </Layout>
+
+<script>
+  import { addGameToWishlist, isGameSaved } from '../../lib/wishlist';
+
+  const supportButton = document.querySelector<HTMLButtonElement>('[data-testid="back-game-button"]');
+  const supportButtonLabel = document.querySelector<HTMLElement>('[data-testid="support-game-button-label"]');
+
+  const sourceGame = {
+    id: Number(supportButton?.dataset.gameId),
+    title: supportButton?.dataset.gameTitle ?? '',
+    description: supportButton?.dataset.gameDescription ?? '',
+    starRating: supportButton?.dataset.gameRating ? Number(supportButton.dataset.gameRating) : null,
+    category: supportButton?.dataset.gameCategoryId
+      ? {
+          id: Number(supportButton.dataset.gameCategoryId),
+          name: supportButton.dataset.gameCategoryName ?? '',
+          description: null,
+        }
+      : null,
+    publisher: supportButton?.dataset.gamePublisherId
+      ? {
+          id: Number(supportButton.dataset.gamePublisherId),
+          name: supportButton.dataset.gamePublisherName ?? '',
+          description: null,
+        }
+      : null,
+  };
+
+  const syncSupportButton = (): void => {
+    if (!supportButton || !supportButtonLabel || !Number.isFinite(sourceGame.id)) {
+      return;
+    }
+
+    const alreadySaved = isGameSaved(sourceGame.id, window.localStorage);
+    supportButton.disabled = alreadySaved;
+    supportButton.classList.toggle('opacity-75', alreadySaved);
+    supportButton.classList.toggle('cursor-not-allowed', alreadySaved);
+    supportButtonLabel.textContent = alreadySaved ? 'Added to Wishlist' : 'Support This Game';
+  };
+
+  if (supportButton) {
+    supportButton.addEventListener('click', () => {
+      addGameToWishlist(sourceGame, window.localStorage);
+      syncSupportButton();
+      window.dispatchEvent(new CustomEvent('tailspin-wishlist-updated'));
+      window.dispatchEvent(new CustomEvent('tailspin-wishlist-added', {
+        detail: {
+          title: sourceGame.title,
+          gameId: sourceGame.id,
+        },
+      }));
+    });
+  }
+
+  syncSupportButton();
+</script>
