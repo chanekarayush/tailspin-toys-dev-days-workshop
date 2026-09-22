@@ -10,7 +10,6 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
 import Heart from '../../assets/icons/heart.svg';
 import { getDatabase } from '../../lib/db';
 import { getAllGameIds, getGameById } from '../../lib/games';
-import { getRetroAssetForGame } from '../../lib/retroAssets';
 
 export const prerender = true;
 
@@ -21,7 +20,6 @@ export const getStaticPaths = (async () => {
 
 const { id } = Astro.params;
 const game = await getGameById(getDatabase(), Number(id));
-const retroArt = getRetroAssetForGame(Number(id));
 
 if (!game) {
     return Astro.redirect('/404');
@@ -34,7 +32,7 @@ if (!game) {
       <div class="p-6">
         <div class="mb-6 grid gap-5 md:grid-cols-[0.75fr_1.25fr] md:items-center">
           <div class="overflow-hidden rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-surface-muted)] p-3">
-            <img src={retroArt} alt="Retro game artwork" class="retro-card-art h-52 w-full rounded-xl object-cover sm:h-60" />
+            <img src="/assets/arcade-machine.png" alt="Retro arcade machine illustration" class="retro-card-art h-52 w-full rounded-xl object-cover sm:h-60" />
           </div>
 
           <div>
