@@ -30,24 +30,32 @@ if (!game) {
   <div class="py-8">
     <Card class="arcade-outline overflow-hidden rounded-2xl" data-testid="game-details">
       <div class="p-6">
-        <p class="arcade-kicker mb-3 text-xs font-bold uppercase">Now loading into the table</p>
-        <div class="flex justify-between items-start flex-wrap gap-3">
-          <h1 class="theme-heading mb-2 text-3xl font-bold" data-testid="game-details-title">{game.title}</h1>
+        <div class="mb-6 grid gap-5 md:grid-cols-[0.75fr_1.25fr] md:items-center">
+          <div class="overflow-hidden rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-surface-muted)] p-3">
+            <img src="/assets/arcade-machine.png" alt="Retro arcade machine illustration" class="retro-card-art h-52 w-full rounded-xl object-cover sm:h-60" />
+          </div>
 
-          <StarRating rating={game.starRating} />
-        </div>
+          <div>
+            <p class="arcade-kicker mb-3 text-xs font-bold uppercase">Now loading into the table</p>
+            <div class="flex justify-between items-start flex-wrap gap-3">
+              <h1 class="theme-heading mb-2 text-3xl font-bold" data-testid="game-details-title">{game.title}</h1>
 
-        <div class="flex flex-wrap gap-2 mt-4 mb-6">
-          {game.category && (
-            <Tag color="blue" data-testid="game-details-category">
-              {game.category.name}
-            </Tag>
-          )}
-          {game.publisher && (
-            <a href={`/publisher/${game.publisher.id}`} data-testid="game-details-publisher-link">
-              <Tag color="purple" data-testid="game-details-publisher">{game.publisher.name}</Tag>
-            </a>
-          )}
+              <StarRating rating={game.starRating} />
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+              {game.category && (
+                <Tag color="blue" data-testid="game-details-category">
+                  {game.category.name}
+                </Tag>
+              )}
+              {game.publisher && (
+                <a href={`/publisher/${game.publisher.id}`} data-testid="game-details-publisher-link">
+                  <Tag color="purple" data-testid="game-details-publisher">{game.publisher.name}</Tag>
+                </a>
+              )}
+            </div>
+          </div>
         </div>
 
         {(game.category?.description || game.publisher?.description) && (
