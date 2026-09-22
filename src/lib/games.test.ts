@@ -10,6 +10,8 @@ import {
     getGameById,
     getAllPublishers,
     getCatalogSummary,
+    getPublisherById,
+    getAllPublisherIds,
 } from './games';
 
 async function seedGames(db: Database, count: number): Promise<void> {
@@ -119,6 +121,13 @@ describe('games data-access helpers', () => {
         expect((await getAllCategories(db)).every((category) => category.description === 'cat')).toBe(true);
         expect((await getAllPublishers(db)).map((publisher) => publisher.name)).toEqual(['Pub One', 'Pub Two']);
         expect((await getAllPublishers(db)).every((publisher) => publisher.description === 'pub')).toBe(true);
+    });
+
+    it('returns a publisher with its games', async () => {
+        await seedGames(db, 4);
+        const result = await getPublisherById(db, (await getAllPublisherIds(db))[0]);
+        expect(result?.publisher.name).toBe('Pub One');
+        expect(result?.games.map((game) => game.title)).toEqual(['Game 01', 'Game 03']);
     });
 
     it('fetches a single game by id', async () => {

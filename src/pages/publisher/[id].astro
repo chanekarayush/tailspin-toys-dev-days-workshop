@@ -1,0 +1,51 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Layout from '../../layouts/Layout.astro';
+import GameCard from '../../components/GameCard.astro';
+import EmptyState from '../../components/EmptyState.astro';
+import Card from '../../components/Card.astro';
+import Button from '../../components/Button.astro';
+import ArrowLeft from '../../assets/icons/arrow-left.svg';
+import { getDatabase } from '../../lib/db';
+import { getAllPublisherIds, getPublisherById } from '../../lib/games';
+
+export const prerender = true;
+
+export const getStaticPaths = (async () => {
+    const ids = await getAllPublisherIds(getDatabase());
+    return ids.map((id) => ({ params: { id: String(id) } }));
+}) satisfies GetStaticPaths;
+
+const result = await getPublisherById(getDatabase(), Number(Astro.params.id));
+
+if (!result) {
+    return Astro.redirect('/404');
+}
+
+const { publisher, games } = result;
+---
+
+<Layout title={`${publisher.name} - Tailspin Toys`}>
+  <div class="py-8">
+    <Card as="section" class="mb-8 p-6" data-testid="publisher-details">
+      <h1 class="theme-heading text-3xl font-bold" data-testid="publisher-name">{publisher.name}</h1>
+      {publisher.description && <p class="theme-copy mt-4" data-testid="publisher-description">{publisher.description}</p>}
+    </Card>
+    <section aria-labelledby="publisher-games-heading">
+      <h2 id="publisher-games-heading" class="theme-heading mb-6 text-2xl font-medium">Games by {publisher.name}</h2>
+      {games.length === 0 ? (
+        <EmptyState text="This publisher has no games yet." />
+      ) : (
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3" data-testid="publisher-games-grid">
+          {games.map((game) => <GameCard game={game} />)}
+        </div>
+      )}
+    </section>
+    <div class="mt-8">
+      <Button href="/" size="sm">
+        <ArrowLeft class="mr-2 h-5 w-5" aria-hidden="true" />
+        Back to all games
+      </Button>
+    </div>
+  </div>
+</Layout>
