@@ -65,6 +65,21 @@ npm run build      # prebuild migrates + seeds, then builds the static site
 npm run preview
 ```
 
+## Deploy to GitHub Pages
+
+The site is configured for the repository's GitHub Pages project URL:
+<https://chanekarayush.github.io/tailspin-toys-dev-days-workshop/>.
+
+To enable deployment:
+
+1. In the repository's **Settings → Pages**, set **Source** to **GitHub Actions**.
+2. Open the **Actions** tab and select **Deploy to GitHub Pages**.
+3. Choose **Run workflow**, select the `main` branch, and run it manually.
+
+The workflow installs dependencies, migrates and seeds the build-time SQLite database, builds the
+static `dist/` output, and deploys it as a Pages artifact. Deployments are manual-only; pushes to
+`main` do not publish automatically.
+
 ## Browse the catalog
 
 The home page catalog can be filtered by selecting one or more categories and

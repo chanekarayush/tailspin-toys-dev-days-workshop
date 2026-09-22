@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 import Button from '../components/Button.astro';
 import ArrowLeft from '../assets/icons/arrow-left.svg';
+const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 ---
 
 <Layout title="Page Not Found - Tailspin Toys">
@@ -13,7 +14,7 @@ import ArrowLeft from '../assets/icons/arrow-left.svg';
       <p class="theme-copy-muted mb-8" data-testid="not-found-text">
         We couldn&apos;t find the page you were looking for. It may have been removed or the link is incorrect.
       </p>
-      <Button href="/" data-testid="not-found-home-link">
+      <Button href={baseUrl} data-testid="not-found-home-link">
         <ArrowLeft class="h-5 w-5 mr-2" aria-hidden="true" />
         Back to all games
       </Button>

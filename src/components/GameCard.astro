@@ -9,10 +9,11 @@ interface Props {
 }
 
 const { game } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 ---
 
 <a
-    href={`/game/${game.id}`}
+    href={`${baseUrl}game/${game.id}`}
     class="group theme-panel block overflow-hidden rounded-xl backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-accent)] hover:shadow-[var(--shadow-elevated)]"
     data-testid="game-card"
     data-game-id={game.id}
