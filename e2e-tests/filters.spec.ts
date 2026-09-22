@@ -33,4 +33,14 @@ test.describe('Game catalog filters', () => {
     await expect(page.locator('[data-testid="game-card"]:visible')).toHaveCount(21);
     await expect(page.getByTestId('filter-results-count')).toHaveText('Showing 21 games');
   });
+
+  test('sorts the catalog by title and rating', async ({ page }) => {
+    const sort = page.getByTestId('game-sort');
+    await sort.selectOption('title-desc');
+    await expect(page.getByTestId('game-title').first()).toHaveText('Virtual Server Simulator');
+
+    await sort.selectOption('rating-desc');
+    const ratings = await page.locator('[data-testid="game-card"]:visible [data-testid="game-rating"]').allTextContents();
+    expect(ratings[0]).not.toContain('No rating yet');
+  });
 });
