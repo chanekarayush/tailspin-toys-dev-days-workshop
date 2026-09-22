@@ -184,6 +184,51 @@ body {
     will-change: transform;
     filter: saturate(1.08) contrast(1.04);
   }
+
+  .retro-icon-field {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.85;
+  }
+
+  .retro-icon {
+    position: absolute;
+    width: 2.2rem;
+    height: 2.2rem;
+    filter: drop-shadow(0 0 0.6rem color-mix(in srgb, var(--color-accent) 25%, transparent));
+    will-change: transform;
+  }
+
+  .retro-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .pacman-one {
+    animation: pacman-s-one 24s ease-in-out infinite alternate;
+  }
+
+  .pacman-two {
+    animation: pacman-s-two 20s ease-in-out infinite alternate;
+  }
+
+  .pacman-three {
+    animation: pacman-s-three 26s ease-in-out infinite alternate;
+  }
+
+  .ghost-one {
+    animation: ghost-s-one 18s ease-in-out infinite alternate;
+  }
+
+  .ghost-two {
+    animation: ghost-s-two 22s ease-in-out infinite alternate;
+  }
+
+  .coin-one {
+    animation: coin-s-one 17s ease-in-out infinite alternate;
+  }
 }
 
 @keyframes retro-float {
@@ -193,6 +238,108 @@ body {
 
   100% {
     transform: translate3d(0, -0.5rem, 0) scale(1.03);
+  }
+}
+
+@keyframes pacman-s-one {
+  0% {
+    transform: translate(0, 12vh) rotate(0deg);
+  }
+  25% {
+    transform: translate(18vw, 22vh) rotate(12deg);
+  }
+  50% {
+    transform: translate(42vw, 15vh) rotate(0deg);
+  }
+  75% {
+    transform: translate(68vw, 26vh) rotate(-10deg);
+  }
+  100% {
+    transform: translate(90vw, 16vh) rotate(0deg);
+  }
+}
+
+@keyframes pacman-s-two {
+  0% {
+    transform: translate(12vw, 52vh) rotate(0deg);
+  }
+  25% {
+    transform: translate(32vw, 60vh) rotate(8deg);
+  }
+  50% {
+    transform: translate(54vw, 46vh) rotate(-4deg);
+  }
+  75% {
+    transform: translate(72vw, 62vh) rotate(10deg);
+  }
+  100% {
+    transform: translate(92vw, 50vh) rotate(0deg);
+  }
+}
+
+@keyframes pacman-s-three {
+  0% {
+    transform: translate(6vw, 78vh) rotate(0deg);
+  }
+  25% {
+    transform: translate(28vw, 66vh) rotate(-10deg);
+  }
+  50% {
+    transform: translate(52vw, 80vh) rotate(4deg);
+  }
+  75% {
+    transform: translate(70vw, 70vh) rotate(14deg);
+  }
+  100% {
+    transform: translate(88vw, 84vh) rotate(0deg);
+  }
+}
+
+@keyframes ghost-s-one {
+  0% {
+    transform: translate(70vw, 20vh) rotate(0deg);
+  }
+  25% {
+    transform: translate(52vw, 12vh) rotate(-6deg);
+  }
+  50% {
+    transform: translate(36vw, 26vh) rotate(8deg);
+  }
+  75% {
+    transform: translate(20vw, 18vh) rotate(-12deg);
+  }
+  100% {
+    transform: translate(6vw, 24vh) rotate(0deg);
+  }
+}
+
+@keyframes ghost-s-two {
+  0% {
+    transform: translate(76vw, 74vh) rotate(0deg);
+  }
+  25% {
+    transform: translate(62vw, 58vh) rotate(12deg);
+  }
+  50% {
+    transform: translate(36vw, 70vh) rotate(-8deg);
+  }
+  75% {
+    transform: translate(20vw, 58vh) rotate(10deg);
+  }
+  100% {
+    transform: translate(8vw, 76vh) rotate(0deg);
+  }
+}
+
+@keyframes coin-s-one {
+  0% {
+    transform: translate(18vw, 40vh) scale(0.9);
+  }
+  50% {
+    transform: translate(50vw, 28vh) scale(1.1);
+  }
+  100% {
+    transform: translate(80vw, 46vh) scale(0.9);
   }
 }
 
@@ -211,6 +358,11 @@ body {
     top: 3rem;
     right: -2rem;
   }
+
+  .retro-icon {
+    width: 1.7rem;
+    height: 1.7rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -221,5 +373,11 @@ body {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+  }
+
+  .retro-asset,
+  .retro-card-art,
+  .retro-icon {
+    animation: none !important;
   }
 }
