@@ -170,6 +170,34 @@ test.describe('Accessibility Tests', () => {
     expect(hasAriaLabel || svgAccessible).toBeTruthy();
   });
 
+  test('theme toggle - should show the current theme icon and switch accessibly', async ({ page }) => {
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await page.goto('/');
+    await page.evaluate(() => localStorage.removeItem('tailspin-theme'));
+    await page.reload();
+
+    const themeToggle = page.getByTestId('theme-toggle');
+    const moonIcon = page.locator('#theme-moon-icon');
+    const sunIcon = page.locator('#theme-sun-icon');
+
+    await expect(themeToggle).toHaveAttribute('aria-label', 'Switch to light mode');
+    await expect(moonIcon).toBeVisible();
+    await expect(sunIcon).toBeHidden();
+
+    await themeToggle.click();
+
+    await expect(themeToggle).toHaveAttribute('aria-label', 'Switch to dark mode');
+    await expect(moonIcon).toBeHidden();
+    await expect(sunIcon).toBeVisible();
+    await expect(page.locator('html')).toHaveClass(/light/);
+
+    await page.reload();
+
+    await expect(themeToggle).toHaveAttribute('aria-label', 'Switch to dark mode');
+    await expect(sunIcon).toBeVisible();
+    await expect(moonIcon).toBeHidden();
+  });
+
   test('color contrast - should meet WCAG AA standards', async ({ page }) => {
     await page.goto('/');
     await page.waitForSelector('[data-testid="games-grid"]', { timeout: 10000 });

@@ -31,11 +31,17 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
     <button
       id="theme-toggle"
       type="button"
-      class="inline-flex items-center gap-2 rounded-md border border-[var(--color-border-default)] bg-[var(--color-surface-muted)] px-3 py-2 text-sm font-medium text-[var(--color-text-primary)] transition-colors duration-200 hover:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus)] focus:ring-offset-2 focus:ring-offset-[var(--color-bg)]"
-      aria-label="Toggle light and dark mode"
+      class="inline-flex items-center rounded-md border border-[var(--color-border-default)] bg-[var(--color-surface-muted)] p-2 text-[var(--color-text-primary)] transition-colors duration-200 hover:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus)] focus:ring-offset-2 focus:ring-offset-[var(--color-bg)]"
+      aria-label="Switch to light mode"
       data-testid="theme-toggle"
     >
-      <span id="theme-label">Light mode</span>
+      <svg id="theme-moon-icon" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
+      </svg>
+      <svg id="theme-sun-icon" class="hidden h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="12" cy="12" r="4" />
+        <path stroke-linecap="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+      </svg>
     </button>
   </div>
 </header>
@@ -44,15 +50,17 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
   const menuToggle = document.getElementById('menu-toggle');
   const menu = document.getElementById('menu');
   const themeToggle = document.getElementById('theme-toggle');
-  const themeLabel = document.getElementById('theme-label');
+  const moonIcon = document.getElementById('theme-moon-icon');
+  const sunIcon = document.getElementById('theme-sun-icon');
   const root = document.documentElement;
 
   const applyTheme = (theme: string): void => {
     const nextTheme = theme === 'light' ? 'light' : 'dark';
     root.classList.toggle('light', nextTheme === 'light');
     root.classList.toggle('dark', nextTheme === 'dark');
-    if (themeLabel) {
-      themeLabel.textContent = nextTheme === 'light' ? 'Light mode' : 'Dark mode';
+    if (moonIcon && sunIcon) {
+      moonIcon.classList.toggle('hidden', nextTheme === 'light');
+      sunIcon.classList.toggle('hidden', nextTheme === 'dark');
     }
     if (themeToggle) {
       themeToggle.setAttribute('aria-label', nextTheme === 'light' ? 'Switch to dark mode' : 'Switch to light mode');
