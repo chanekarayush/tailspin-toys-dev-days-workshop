@@ -8,6 +8,28 @@ export interface GameFilters {
     publisherName?: string;
 }
 
+export type GameSort = 'title-asc' | 'title-desc' | 'rating-desc';
+
+/**
+ * Sorts games deterministically, placing unrated games after rated games.
+ *
+ * @param gamesToSort - Games to order without mutating the input array.
+ * @param sort - Requested title or rating order.
+ * @returns A newly sorted game array.
+ */
+export function sortGames(gamesToSort: readonly Game[], sort: GameSort): Game[] {
+    return [...gamesToSort].sort((left, right) => {
+        if (sort === 'rating-desc') {
+            if (left.starRating === null && right.starRating === null) return left.title.localeCompare(right.title);
+            if (left.starRating === null) return 1;
+            if (right.starRating === null) return -1;
+            return right.starRating - left.starRating || left.title.localeCompare(right.title);
+        }
+        const comparison = left.title.localeCompare(right.title);
+        return sort === 'title-desc' ? -comparison : comparison;
+    });
+}
+
 const gameSelection = {
     id: games.id,
     title: games.title,

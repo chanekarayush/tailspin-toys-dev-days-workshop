@@ -12,6 +12,7 @@ import {
     getCatalogSummary,
     getPublisherById,
     getAllPublisherIds,
+    sortGames,
 } from './games';
 
 async function seedGames(db: Database, count: number): Promise<void> {
@@ -57,6 +58,16 @@ describe('games data-access helpers', () => {
         expect(all.map((g) => g.title)).toEqual(['Game 01', 'Game 02', 'Game 03']);
         expect(all[0].category).toEqual({ id: expect.any(Number), name: 'Strategy', description: 'cat' });
         expect(all[0].publisher).toEqual({ id: expect.any(Number), name: 'Pub One', description: 'pub' });
+    });
+
+    it('sorts games by title and rating with unrated games last', async () => {
+        await seedGames(db, 3);
+        const all = await getAllGames(db);
+        all[0].starRating = null;
+        all[1].starRating = 4.9;
+        all[2].starRating = 3.2;
+        expect(sortGames(all, 'title-desc').map((game) => game.title)).toEqual(['Game 03', 'Game 02', 'Game 01']);
+        expect(sortGames(all, 'rating-desc').map((game) => game.title)).toEqual(['Game 02', 'Game 03', 'Game 01']);
     });
 
     it('returns all game ids ordered by title', async () => {
