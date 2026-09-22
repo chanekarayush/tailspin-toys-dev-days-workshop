@@ -23,6 +23,14 @@ test.describe('Game catalog filters', () => {
     await publisherFilter.evaluate((select) => {
       (select as HTMLSelectElement).add(new Option('Unavailable publisher', 'unavailable'));
     });
+
+    test('sorts the catalog by title and rating', async ({ page }) => {
+      const sort = page.getByTestId('game-sort');
+      await sort.selectOption('title-desc');
+      await expect(page.getByTestId('game-title').first()).toHaveText('Virtual Server Simulator');
+      await sort.selectOption('rating-desc');
+      await expect(page.locator('[data-testid="game-card"]:visible [data-testid="game-rating"]').first()).not.toContainText('No rating yet');
+    });
     await publisherFilter.selectOption('unavailable');
 
     await expect(page.getByTestId('filtered-empty-state')).toBeVisible();
