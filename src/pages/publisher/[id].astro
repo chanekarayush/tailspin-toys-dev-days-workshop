@@ -28,7 +28,8 @@ const { publisher, games } = result;
 
 <Layout title={`${publisher.name} - Tailspin Toys`}>
   <div class="py-8">
-    <Card as="section" class="mb-8 p-6" data-testid="publisher-details">
+    <Card as="section" class="arcade-outline mb-8 rounded-2xl p-6" data-testid="publisher-details">
+      <p class="arcade-kicker mb-3 text-xs font-bold uppercase">Publisher profile</p>
       <h1 class="theme-heading text-3xl font-bold" data-testid="publisher-name">{publisher.name}</h1>
       {publisher.description && <p class="theme-copy mt-4" data-testid="publisher-description">{publisher.description}</p>}
     </Card>

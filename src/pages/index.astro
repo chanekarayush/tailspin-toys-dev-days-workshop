@@ -23,14 +23,14 @@ const catalogSummary = await getCatalogSummary(database);
     />
 
     <div class="mb-8 grid gap-4 md:grid-cols-2" data-testid="catalog-summary" aria-label="Catalog summary">
-      <div class="theme-panel rounded-xl p-6">
+      <div class="theme-panel arcade-outline rounded-2xl p-6">
         <p class="theme-copy-muted text-sm font-medium uppercase tracking-[0.12em]">Games in catalog</p>
         <p class="theme-heading mt-3 text-3xl font-semibold" data-testid="catalog-total-games">
           {catalogSummary.totalGames}
         </p>
       </div>
 
-      <div class="theme-panel rounded-xl p-6">
+      <div class="theme-panel arcade-outline rounded-2xl p-6">
         <p class="theme-copy-muted text-sm font-medium uppercase tracking-[0.12em]">Average rating</p>
         <p class="theme-heading mt-3 text-3xl font-semibold" data-testid="catalog-average-rating">
           {catalogSummary.averageRating === null ? 'No ratings yet' : `${catalogSummary.averageRating.toFixed(2)} / 5`}
@@ -39,14 +39,20 @@ const catalogSummary = await getCatalogSummary(database);
     </div>
 
     <div>
-      <h2 class="theme-heading mb-6 text-2xl font-medium">Featured Games</h2>
+      <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p class="arcade-kicker mb-2 text-xs font-bold uppercase">Player one catalog</p>
+          <h2 class="theme-heading text-2xl font-bold">Featured Games</h2>
+        </div>
+        <p class="theme-copy-muted text-sm">Find a table, start a story.</p>
+      </div>
 
       {games.length === 0 ? (
         <EmptyState text="No games available at the moment." />
       ) : (
         <>
           <form
-            class="theme-panel-subtle mb-8 grid gap-6 rounded-xl p-6 md:grid-cols-[1fr_16rem] md:items-start"
+            class="theme-panel-subtle mb-8 grid gap-6 rounded-2xl p-6 md:grid-cols-[1fr_16rem] md:items-start"
             data-testid="game-filters"
             role="search"
             aria-describedby="filter-description"
