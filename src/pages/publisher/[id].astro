@@ -6,6 +6,7 @@ import EmptyState from '../../components/EmptyState.astro';
 import Card from '../../components/Card.astro';
 import Button from '../../components/Button.astro';
 import ArrowLeft from '../../assets/icons/arrow-left.svg';
+const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 import { getDatabase } from '../../lib/db';
 import { getAllPublisherIds, getPublisherById } from '../../lib/games';
 
@@ -42,7 +43,7 @@ const { publisher, games } = result;
       )}
     </section>
     <div class="mt-8">
-      <Button href="/" size="sm">
+      <Button href={baseUrl} size="sm">
         <ArrowLeft class="mr-2 h-5 w-5" aria-hidden="true" />
         Back to all games
       </Button>

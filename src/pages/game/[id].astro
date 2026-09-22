@@ -6,6 +6,7 @@ import Tag from '../../components/Tag.astro';
 import Card from '../../components/Card.astro';
 import Button from '../../components/Button.astro';
 import ArrowLeft from '../../assets/icons/arrow-left.svg';
+const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 import Heart from '../../assets/icons/heart.svg';
 import { getDatabase } from '../../lib/db';
 import { getAllGameIds, getGameById } from '../../lib/games';
@@ -82,7 +83,7 @@ if (!game) {
     </Card>
 
     <div class="mt-8">
-      <Button href="/" size="sm">
+      <Button href={baseUrl} size="sm">
         <ArrowLeft class="h-5 w-5 mr-2" aria-hidden="true" />
         Back to all games
       </Button>
