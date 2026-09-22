@@ -144,6 +144,15 @@ const catalogSummary = await getCatalogSummary(database);
               <EmptyState text="No games match your search." />
             </div>
           </div>
+          <nav class="mt-8 flex items-center justify-between gap-4" aria-label="Game catalog pagination" data-testid="game-pagination">
+            <button type="button" class="rounded-lg border border-[var(--color-border-default)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-focus)] disabled:cursor-not-allowed disabled:opacity-50" data-testid="previous-page">
+              Previous
+            </button>
+            <span class="theme-copy-muted text-sm" data-testid="pagination-status" aria-live="polite"></span>
+            <button type="button" class="rounded-lg border border-[var(--color-border-default)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-focus)] disabled:cursor-not-allowed disabled:opacity-50" data-testid="next-page">
+              Next
+            </button>
+          </nav>
         </>
       )}
     </div>
@@ -163,6 +172,11 @@ const catalogSummary = await getCatalogSummary(database);
     const publisherFilter = filterForm.querySelector<HTMLSelectElement>('select[name="publisher"]');
     const sortSelect = document.querySelector<HTMLSelectElement>('[data-testid="game-sort"]');
     const gamesGrid = document.querySelector<HTMLElement>('[data-testid="games-grid"]');
+    const previousPage = document.querySelector<HTMLButtonElement>('[data-testid="previous-page"]');
+    const nextPage = document.querySelector<HTMLButtonElement>('[data-testid="next-page"]');
+    const paginationStatus = document.querySelector<HTMLElement>('[data-testid="pagination-status"]');
+    const pageSize = 6;
+    let currentPage = 1;
 
     const sortCards = (): void => {
       if (!sortSelect || !gamesGrid) return;
@@ -191,6 +205,8 @@ const catalogSummary = await getCatalogSummary(database);
       const selectedPublisher = publisherFilter?.value ?? '';
       sortCards();
       let visibleCount = 0;
+      const matchingCards: HTMLElement[] = [];
+
       cards.forEach((card) => {
         const titleMatches = (card.querySelector<HTMLElement>('[data-game-title]')?.dataset.gameTitle ?? '')
           .toLocaleLowerCase()
@@ -200,10 +216,24 @@ const catalogSummary = await getCatalogSummary(database);
         const publisherMatches = selectedPublisher === '' || selectedPublisher === card.dataset.publisherId;
         const isVisible = titleMatches && categoryMatches && publisherMatches;
 
-        card.hidden = !isVisible;
-        if (isVisible) visibleCount += 1;
+        if (isVisible) {
+          matchingCards.push(card);
+          visibleCount += 1;
+        } else {
+          card.hidden = true;
+        }
       });
 
+      const totalPages = Math.max(1, Math.ceil(matchingCards.length / pageSize));
+      currentPage = Math.min(currentPage, totalPages);
+      matchingCards.forEach((card, index) => {
+        card.hidden = index < (currentPage - 1) * pageSize || index >= currentPage * pageSize;
+      });
+      if (previousPage && nextPage && paginationStatus) {
+        previousPage.disabled = currentPage === 1;
+        nextPage.disabled = currentPage === totalPages;
+        paginationStatus.textContent = `Page ${currentPage} of ${totalPages}`;
+      }
       emptyState.classList.toggle('hidden', visibleCount > 0);
       const statusText = query
         ? `${visibleCount} ${visibleCount === 1 ? 'game' : 'games'} found`
@@ -214,7 +244,19 @@ const catalogSummary = await getCatalogSummary(database);
 
     filterForm.addEventListener('input', updateResults);
     filterForm.addEventListener('change', updateResults);
-    filterForm.addEventListener('reset', () => requestAnimationFrame(updateResults));
+    filterForm.addEventListener('reset', () => {
+      currentPage = 1;
+      requestAnimationFrame(updateResults);
+    });
     sortSelect?.addEventListener('change', updateResults);
+    previousPage?.addEventListener('click', () => {
+      currentPage = Math.max(1, currentPage - 1);
+      updateResults();
+    });
+    nextPage?.addEventListener('click', () => {
+      currentPage += 1;
+      updateResults();
+    });
+    updateResults();
   }
 </script>
