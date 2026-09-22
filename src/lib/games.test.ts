@@ -13,6 +13,7 @@ import {
     getPublisherById,
     getAllPublisherIds,
     sortGames,
+    getGamesPage,
 } from './games';
 
 async function seedGames(db: Database, count: number): Promise<void> {
@@ -68,6 +69,14 @@ describe('games data-access helpers', () => {
         all[2].starRating = 3.2;
         expect(sortGames(all, 'title-desc').map((game) => game.title)).toEqual(['Game 03', 'Game 02', 'Game 01']);
         expect(sortGames(all, 'rating-desc').map((game) => game.title)).toEqual(['Game 02', 'Game 03', 'Game 01']);
+    });
+
+    it('returns a bounded catalog page and total', async () => {
+        await seedGames(db, 5);
+        const result = await getGamesPage(db, 2, 2);
+        expect(result.total).toBe(5);
+        expect(result.page).toBe(2);
+        expect(result.games.map((game) => game.title)).toEqual(['Game 03', 'Game 04']);
     });
 
     it('returns all game ids ordered by title', async () => {

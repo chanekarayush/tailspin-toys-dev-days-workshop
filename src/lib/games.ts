@@ -25,9 +25,34 @@ export function sortGames(gamesToSort: readonly Game[], sort: GameSort): Game[] 
             if (right.starRating === null) return -1;
             return right.starRating - left.starRating || left.title.localeCompare(right.title);
         }
+
         const comparison = left.title.localeCompare(right.title);
         return sort === 'title-desc' ? -comparison : comparison;
     });
+}
+
+/**
+ * Returns one page of the catalog while preserving its stable ordering.
+ *
+ * @param db - The Drizzle database instance used for the query.
+ * @param page - One-based page number.
+ * @param limit - Number of games per page.
+ * @param filters - Optional catalog filters applied before pagination.
+ * @returns The requested page and total matching game count.
+ */
+export async function getGamesPage(
+    db: Database,
+    page: number,
+    limit: number,
+    filters: GameFilters = {},
+): Promise<{ games: Game[]; total: number; page: number; limit: number }> {
+    const safeLimit = Math.max(1, Math.floor(limit));
+    const allGames = await getAllGames(db, filters);
+    const total = allGames.length;
+    const totalPages = Math.max(1, Math.ceil(total / safeLimit));
+    const safePage = Math.min(Math.max(1, Math.floor(page)), totalPages);
+    const start = (safePage - 1) * safeLimit;
+    return { games: allGames.slice(start, start + safeLimit), total, page: safePage, limit: safeLimit };
 }
 
 const gameSelection = {
