@@ -150,6 +150,15 @@ test.describe('Game Listing and Navigation', () => {
     });
   });
 
+  test('should navigate to a publisher page from game details', async ({ page }) => {
+    await page.goto('/game/1');
+    await page.getByTestId('game-details-publisher-link').click();
+    await expect(page).toHaveURL(/\/publisher\/\d+/);
+    await expect(page.getByTestId('publisher-details')).toBeVisible();
+    await expect(page.getByTestId('publisher-description')).not.toBeEmpty();
+    await expect(page.getByTestId('publisher-games-grid').getByTestId('game-card')).toHaveCount(6);
+  });
+
   test('should return a 404 page for a non-existent game', async ({ page }) => {
     let response: Response | null;
 
