@@ -30,7 +30,7 @@ test.describe('Game catalog filters', () => {
     await expect(page.getByTestId('filter-results-count')).toHaveText('Showing 0 games');
 
     await page.getByTestId('clear-filters').click();
-    await expect(page.locator('[data-testid="game-card"]:visible')).toHaveCount(21);
+    await expect(page.locator('[data-testid="game-card"]:visible')).toHaveCount(6);
     await expect(page.getByTestId('filter-results-count')).toHaveText('Showing 21 games');
   });
 
@@ -42,5 +42,15 @@ test.describe('Game catalog filters', () => {
     await sort.selectOption('rating-desc');
     const ratings = await page.locator('[data-testid="game-card"]:visible [data-testid="game-rating"]').allTextContents();
     expect(ratings[0]).not.toContain('No rating yet');
+  });
+
+  test('paginates the catalog with accessible controls', async ({ page }) => {
+    await expect(page.getByTestId('pagination-status')).toHaveText('Page 1 of 4');
+    await expect(page.getByTestId('previous-page')).toBeDisabled();
+    await page.getByTestId('next-page').click();
+    await expect(page.getByTestId('pagination-status')).toHaveText('Page 2 of 4');
+    await expect(page.locator('[data-testid="game-card"]:visible')).toHaveCount(6);
+    await page.getByTestId('previous-page').click();
+    await expect(page.getByTestId('pagination-status')).toHaveText('Page 1 of 4');
   });
 });
