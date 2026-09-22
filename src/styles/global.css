@@ -17,6 +17,9 @@
   --color-accent-strong: #1f6feb;
   --color-link: #58a6ff;
   --color-focus: #1f6feb;
+  --color-arcade-cyan: #79c0ff;
+  --color-arcade-violet: #bc8cff;
+  --color-arcade-orange: #ffa657;
   --color-success: #238636;
   --color-success-bg: #dafbe1;
   --color-success-text: #1a7f37;
@@ -47,6 +50,9 @@ html.light {
   --color-accent-strong: #0969da;
   --color-link: #0969da;
   --color-focus: #0969da;
+  --color-arcade-cyan: #0969da;
+  --color-arcade-violet: #8250df;
+  --color-arcade-orange: #bc4c00;
   --color-success: #1a7f37;
   --color-success-bg: #dafbe1;
   --color-success-text: #1a7f37;
@@ -68,6 +74,15 @@ html {
 body {
   background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-subtle) 100%);
   color: var(--color-text-primary);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .arcade-grid {
+    background-image:
+      linear-gradient(to right, color-mix(in srgb, var(--color-border-subtle) 45%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in srgb, var(--color-border-subtle) 45%, transparent) 1px, transparent 1px);
+    background-size: 2.5rem 2.5rem;
+  }
 }
 
 ::selection {
@@ -116,5 +131,25 @@ body {
 
   .theme-heading {
     color: var(--color-text-primary);
+  }
+
+  .arcade-kicker {
+    color: var(--color-arcade-cyan);
+    letter-spacing: 0.18em;
+  }
+
+  .arcade-outline {
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-accent) 35%, transparent), var(--shadow-card);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }

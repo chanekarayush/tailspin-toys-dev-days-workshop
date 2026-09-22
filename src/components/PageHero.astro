@@ -7,10 +7,13 @@ interface Props {
 const { title, subtitle } = Astro.props;
 ---
 
-<div class="max-w-3xl mb-10" data-testid="page-hero">
-    <h1 class="theme-heading mb-4 text-4xl font-bold" data-testid="page-hero-title">{title}</h1>
-    {subtitle && (
-        <p class="theme-copy text-xl" data-testid="page-hero-subtitle">{subtitle}</p>
-    )}
+<section class="arcade-outline relative mb-10 max-w-4xl overflow-hidden rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-surface)]/90 p-6 sm:p-10" data-testid="page-hero">
+    <div class="relative z-10">
+        <p class="arcade-kicker mb-3 text-xs font-bold uppercase">Insert coin • discover something new</p>
+        <h1 class="theme-heading mb-4 text-4xl font-black tracking-tight sm:text-6xl" data-testid="page-hero-title">{title}</h1>
+        {subtitle && (
+            <p class="theme-copy max-w-2xl text-lg sm:text-xl" data-testid="page-hero-subtitle">{subtitle}</p>
+        )}
+    </div>
     <slot />
-</div>
+</section>
