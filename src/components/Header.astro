@@ -4,7 +4,7 @@ import Menu from '../assets/icons/menu.svg';
 const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 ---
 
-<header class="border-b border-[var(--color-border-default)] bg-[var(--color-surface)]/95 text-[var(--color-text-primary)] p-4 shadow-[var(--shadow-card)] transition-colors duration-300 backdrop-blur-sm">
+<header class="sticky top-0 z-30 border-b border-[var(--color-border-default)] bg-[var(--color-surface)]/95 p-4 text-[var(--color-text-primary)] shadow-[var(--shadow-card)] transition-colors duration-300 backdrop-blur-sm">
   <div class="container mx-auto flex items-center justify-between gap-4 pl-4 pr-4">
     <div class="flex items-center">
       <div class="relative group">
@@ -21,11 +21,17 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
         <nav id="menu" aria-label="Main" class="absolute left-0 z-20 mt-2 hidden w-48 rounded-lg border border-[var(--color-border-default)] bg-[var(--color-surface)] p-2 shadow-[var(--shadow-elevated)]">
           <ul class="space-y-1">
             <li><a href={baseUrl} class="block rounded-md px-3 py-2 text-sm font-medium text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-link)]">Home</a></li>
+            <li><a href={`${baseUrl}wishlist`} class="block rounded-md px-3 py-2 text-sm font-medium text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-link)]" data-testid="wishlist-nav-link">Wishlist <span data-testid="wishlist-nav-count" aria-live="polite">(0)</span></a></li>
             <li><a href={`${baseUrl}about`} class="block rounded-md px-3 py-2 text-sm font-medium text-[var(--color-text-primary)] transition-colors hover:bg-[var(--color-surface-muted)] hover:text-[var(--color-link)]">About</a></li>
           </ul>
         </nav>
       </div>
-      <div class="text-xl font-bold"><a href={baseUrl} class="text-[var(--color-text-primary)] hover:text-[var(--color-link)]">Tailspin Toys</a></div>
+      <div>
+        <a href={baseUrl} class="block text-xl font-bold tracking-tight text-[var(--color-text-primary)] hover:text-[var(--color-link)]" data-testid="site-brand">
+          Tailspin <span class="text-[var(--color-arcade-cyan)]">Toys</span>
+        </a>
+        <p class="hidden text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-[var(--color-text-muted)] sm:block">Play. Back. Repeat.</p>
+      </div>
     </div>
 
     <button
@@ -47,12 +53,22 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
 </header>
 
 <script>
+  import { getWishlist } from '../lib/wishlist';
+
   const menuToggle = document.getElementById('menu-toggle');
   const menu = document.getElementById('menu');
   const themeToggle = document.getElementById('theme-toggle');
   const moonIcon = document.getElementById('theme-moon-icon');
   const sunIcon = document.getElementById('theme-sun-icon');
   const root = document.documentElement;
+  const wishlistNavCount = document.querySelector<HTMLElement>('[data-testid="wishlist-nav-count"]');
+
+  const updateWishlistCount = (): void => {
+    const wishlist = getWishlist(window.localStorage);
+    if (wishlistNavCount) {
+      wishlistNavCount.textContent = `(${wishlist.length})`;
+    }
+  };
 
   const applyTheme = (theme: string): void => {
     const nextTheme = theme === 'light' ? 'light' : 'dark';
@@ -71,6 +87,7 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
   const storedTheme = localStorage.getItem('tailspin-theme');
   const preferredTheme = storedTheme || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
   applyTheme(preferredTheme);
+  updateWishlistCount();
 
   if (menuToggle && menu) {
     menuToggle.addEventListener('click', () => {
@@ -107,4 +124,7 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
       applyTheme(nextTheme);
     });
   }
+
+  window.addEventListener('storage', updateWishlistCount);
+  window.addEventListener('tailspin-wishlist-updated', updateWishlistCount);
 </script>

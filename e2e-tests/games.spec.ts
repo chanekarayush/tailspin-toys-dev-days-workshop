@@ -28,7 +28,9 @@ test.describe('Game Listing and Navigation', () => {
       await expect(gameCards.getByTestId('game-artwork')).toHaveCount(await gameCards.count());
       const firstCard = page.getByTestId('game-card').first();
       const title = await firstCard.getAttribute('data-game-title');
-      await expect(firstCard.getByRole('img', { name: `Illustrated cover art for ${title}` })).toBeVisible();
+      const artwork = firstCard.getByRole('img', { name: `Illustration for ${title}` });
+      await expect(artwork).toBeVisible();
+      await expect.poll(() => artwork.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
     });
   });
 
@@ -99,9 +101,9 @@ test.describe('Game Listing and Navigation', () => {
     });
 
     await test.step('Verify the game details page displays accessible cover art', async () => {
-      await expect(
-        page.getByRole('img', { name: 'Illustrated cover art for DevOps Dominion' }),
-      ).toBeVisible();
+      const artwork = page.getByRole('img', { name: 'Illustration for DevOps Dominion' });
+      await expect(artwork).toBeVisible();
+      await expect.poll(() => artwork.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
     });
 
     await test.step('Verify game description is displayed', async () => {

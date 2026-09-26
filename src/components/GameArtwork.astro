@@ -1,65 +1,35 @@
 ---
 import type { Game } from '../types/game';
 
-/** Identifies the game whose original, locally rendered cover illustration is shown. */
+/** Identifies the game and image layout for its locally bundled cover illustration. */
 interface Props {
     game: Game;
+    variant?: 'card' | 'detail';
 }
 
-const { game } = Astro.props;
-const palettes = [
-    { start: '#312e81', end: '#0f766e', accent: '#a5f3fc' },
-    { start: '#701a75', end: '#9a3412', accent: '#fef08a' },
-    { start: '#1e3a8a', end: '#4338ca', accent: '#bfdbfe' },
-    { start: '#14532d', end: '#155e75', accent: '#bbf7d0' },
-    { start: '#7f1d1d', end: '#9d174d', accent: '#fecdd3' },
-    { start: '#4c1d95', end: '#1e40af', accent: '#ddd6fe' },
+const { game, variant = 'card' } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const artworkFiles = [
+    'arcade-machine.png',
+    'game-console-pocket.png',
+    'game-console.png',
+    'game-over.png',
+    'game-over-skull.png',
+    'gamer.png',
+    'ghost.png',
+    'ghost-2.png',
 ] as const;
-const palette = palettes[(game.id - 1) % palettes.length];
-const gradientId = `game-artwork-gradient-${game.id}`;
+const artworkFile = artworkFiles[(game.id - 1) % artworkFiles.length];
 ---
 
-<svg
-    viewBox="0 0 640 360"
-    class="block h-full w-full"
-    role="img"
-    aria-label={`Illustrated cover art for ${game.title}`}
+<img
+    src={`${baseUrl}assets/${artworkFile}`}
+    alt={`Illustration for ${game.title}`}
+    class:list={[
+        'block',
+        variant === 'card'
+            ? 'h-full w-full object-cover'
+            : 'retro-card-art h-52 w-full rounded-xl object-cover sm:h-60',
+    ]}
     data-testid="game-artwork"
-    xmlns="http://www.w3.org/2000/svg"
->
-    <defs>
-        <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color={palette.start} />
-            <stop offset="100%" stop-color={palette.end} />
-        </linearGradient>
-        <pattern id={`game-artwork-grid-${game.id}`} width="32" height="32" patternUnits="userSpaceOnUse">
-            <path d="M32 0H0V32" fill="none" stroke="white" stroke-opacity=".08" />
-        </pattern>
-    </defs>
-    <rect width="640" height="360" fill={`url(#${gradientId})`} />
-    <rect width="640" height="360" fill={`url(#game-artwork-grid-${game.id})`} />
-    <circle cx="514" cy="112" r="92" fill={palette.accent} fill-opacity=".12" />
-    <circle cx="514" cy="112" r="62" fill="none" stroke={palette.accent} stroke-opacity=".5" stroke-width="2" />
-    <circle cx="514" cy="112" r="38" fill={palette.accent} fill-opacity=".14" />
-    <path
-        d="M0 258 98 213l68 28 96-102 94 50 74-39 94 50 116-78v238H0Z"
-        fill="#080b1a"
-        fill-opacity=".42"
-    />
-    <path
-        d="m74 222 92 38 96-102 94 50 74-39 94 50"
-        fill="none"
-        stroke={palette.accent}
-        stroke-opacity=".78"
-        stroke-width="3"
-    />
-    <rect x="52" y="62" width="10" height="10" rx="2" fill={palette.accent} />
-    <rect x="77" y="62" width="10" height="10" rx="2" fill={palette.accent} fill-opacity=".6" />
-    <rect x="102" y="62" width="10" height="10" rx="2" fill={palette.accent} fill-opacity=".35" />
-    <text x="52" y="292" fill="white" font-size="15" font-family="monospace" letter-spacing="3" opacity=".8">
-        {game.category?.name?.toUpperCase() ?? 'INDIE GAME'}
-    </text>
-    <text x="52" y="326" fill="white" font-size="25" font-family="sans-serif" font-weight="700">
-        {game.title}
-    </text>
-</svg>
+/>

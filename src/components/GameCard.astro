@@ -15,7 +15,7 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
 
 <a
     href={`${baseUrl}game/${game.id}`}
-    class="group theme-panel block overflow-hidden rounded-xl backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-accent)] hover:shadow-[var(--shadow-elevated)]"
+    class="group theme-panel block overflow-hidden rounded-2xl backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-accent)] hover:shadow-[var(--shadow-elevated)]"
     data-testid="game-card"
     data-game-id={game.id}
     data-game-title={game.title}
@@ -24,13 +24,17 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
     <div class="aspect-[16/9] overflow-hidden">
         <GameArtwork game={game} />
     </div>
-    <div class="p-6 relative">
-        <div class="absolute inset-0 bg-gradient-to-r from-[var(--color-accent)]/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+    <div class="relative p-4 sm:p-6">
+        <div class="absolute inset-0 bg-gradient-to-br from-[var(--color-accent)]/12 via-transparent to-[var(--color-arcade-violet)]/8 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
         <div class="relative z-10">
+            <div class="mb-4 flex items-start justify-between gap-3">
+                <p class="arcade-kicker text-[0.65rem] font-bold uppercase">Game {String(game.id).padStart(2, '0')}</p>
+                <span class="rounded-full border border-[var(--color-border-default)] px-2 py-1 text-[0.65rem] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">Explore</span>
+            </div>
             <h3 class="theme-heading mb-2 text-xl font-semibold transition-colors group-hover:text-[var(--color-link)]" data-testid="game-title">{game.title}</h3>
 
             {(game.category?.name || game.publisher?.name) && (
-                <div class="flex gap-2 mb-3">
+                <div class="mb-3 flex flex-wrap gap-2">
                     {game.category?.name && (
                         <Tag color="blue" data-testid="game-category">
                             {game.category.name}
@@ -54,7 +58,7 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
 
             <div class="mt-4 flex items-center text-sm font-medium text-[var(--color-link)]">
                 <span>View details</span>
-                <ArrowRight class="h-4 w-4 ml-1 transform transition-transform duration-300 group-hover:translate-x-2" aria-hidden="true" />
+                <ArrowRight class="ml-1 h-4 w-4 transform transition-transform duration-300 group-hover:translate-x-2" aria-hidden="true" />
             </div>
         </div>
     </div>

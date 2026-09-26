@@ -15,7 +15,7 @@ The database is migrated and seeded automatically before `dev`/`build` (via the 
 
 The home page supports filtering the catalog by one or more categories and by publisher. Filters update the statically rendered catalog in the browser, so no backend service is required.
 
-Catalog cards and game detail pages display original, locally rendered SVG cover illustrations, so artwork is available in static builds without external image requests.
+Catalog cards and game detail pages display locally bundled game illustrations. Asset URLs include the configured site base path so images remain available on GitHub Pages and other subpath deployments.
 
 ## Coding standards
 
@@ -90,6 +90,13 @@ without leaving the statically generated page; the clear button restores the
 full catalog. The landing page also summarizes the database with the total game
 count and the average star rating across rated titles, while handling empty or
 unrated catalog states gracefully.
+
+## Wishlist
+
+The site includes a browser-persisted wishlist for games users want to support.
+Clicking the “Support This Game” button on a title detail page stores that game in
+`localStorage`, and the wishlist page lists all saved titles with controls to
+remove individual items or clear the entire list.
 
 ## Database
 

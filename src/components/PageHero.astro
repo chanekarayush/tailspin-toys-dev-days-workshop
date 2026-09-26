@@ -5,12 +5,28 @@ interface Props {
 }
 
 const { title, subtitle } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 ---
 
-<div class="max-w-3xl mb-10" data-testid="page-hero">
-    <h1 class="theme-heading mb-4 text-4xl font-bold" data-testid="page-hero-title">{title}</h1>
-    {subtitle && (
-        <p class="theme-copy text-xl" data-testid="page-hero-subtitle">{subtitle}</p>
-    )}
+<section class="arcade-outline relative mb-10 max-w-5xl overflow-hidden rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-surface)]/90 p-6 sm:p-10" data-testid="page-hero">
+    <div class="grid items-center gap-6 md:grid-cols-[1.2fr_0.8fr]">
+        <div class="relative z-10">
+            <p class="arcade-kicker mb-3 text-xs font-bold uppercase">Insert coin • discover something new</p>
+            <h1 class="theme-heading mb-4 text-4xl font-black tracking-tight sm:text-6xl" data-testid="page-hero-title">{title}</h1>
+            {subtitle && (
+                <p class="theme-copy max-w-2xl text-lg sm:text-xl" data-testid="page-hero-subtitle">{subtitle}</p>
+            )}
+        </div>
+
+        <div class="relative z-10 flex justify-center md:justify-end">
+            <div class="retro-panel retro-slow-float w-full max-w-xs rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-surface-muted)] p-4 shadow-[var(--shadow-elevated)]">
+                <img
+                    src={`${baseUrl}assets/arcade-machine.png`}
+                    alt="Retro arcade cabinet illustration"
+                    class="retro-asset mx-auto h-auto w-full rounded-xl object-cover"
+                />
+            </div>
+        </div>
+    </div>
     <slot />
-</div>
+</section>
