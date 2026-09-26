@@ -2,6 +2,7 @@
 import type { Game } from '../types/game';
 import Tag from './Tag.astro';
 import StarRating from './StarRating.astro';
+import GameArtwork from './GameArtwork.astro';
 import ArrowRight from '../assets/icons/arrow-right.svg';
 
 interface Props {
@@ -20,6 +21,9 @@ const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_UR
     data-game-title={game.title}
     data-game-rating={game.starRating ?? ''}
 >
+    <div class="aspect-[16/9] overflow-hidden">
+        <GameArtwork game={game} />
+    </div>
     <div class="relative p-4 sm:p-6">
         <div class="absolute inset-0 bg-gradient-to-br from-[var(--color-accent)]/12 via-transparent to-[var(--color-arcade-violet)]/8 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
         <div class="relative z-10">

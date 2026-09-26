@@ -22,6 +22,16 @@ test.describe('Game Listing and Navigation', () => {
       await expect(gameCards.first().getByTestId('game-title')).toBeVisible();
       await expect(gameCards.first().getByTestId('game-title')).not.toBeEmpty();
     });
+
+    await test.step('Verify each game card has accessible illustrated cover art', async () => {
+      const gameCards = page.getByTestId('game-card');
+      await expect(gameCards.getByTestId('game-artwork')).toHaveCount(await gameCards.count());
+      const firstCard = page.getByTestId('game-card').first();
+      const title = await firstCard.getAttribute('data-game-title');
+      const artwork = firstCard.getByRole('img', { name: `Illustration for ${title}` });
+      await expect(artwork).toBeVisible();
+      await expect.poll(() => artwork.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    });
   });
 
   test('should filter games by title and show a no-results state', async ({ page }) => {
@@ -88,6 +98,12 @@ test.describe('Game Listing and Navigation', () => {
       const gameTitle = page.getByTestId('game-details-title');
       await expect(gameTitle).toBeVisible();
       await expect(gameTitle).not.toBeEmpty();
+    });
+
+    await test.step('Verify the game details page displays accessible cover art', async () => {
+      const artwork = page.getByRole('img', { name: 'Illustration for DevOps Dominion' });
+      await expect(artwork).toBeVisible();
+      await expect.poll(() => artwork.evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
     });
 
     await test.step('Verify game description is displayed', async () => {

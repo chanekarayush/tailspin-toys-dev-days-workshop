@@ -15,6 +15,8 @@ The database is migrated and seeded automatically before `dev`/`build` (via the 
 
 The home page supports filtering the catalog by one or more categories and by publisher. Filters update the statically rendered catalog in the browser, so no backend service is required.
 
+Catalog cards and game detail pages display locally bundled game illustrations. Asset URLs include the configured site base path so images remain available on GitHub Pages and other subpath deployments.
+
 ## Coding standards
 
 ### Theme conventions

@@ -1,0 +1,35 @@
+---
+import type { Game } from '../types/game';
+
+/** Identifies the game and image layout for its locally bundled cover illustration. */
+interface Props {
+    game: Game;
+    variant?: 'card' | 'detail';
+}
+
+const { game, variant = 'card' } = Astro.props;
+const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const artworkFiles = [
+    'arcade-machine.png',
+    'game-console-pocket.png',
+    'game-console.png',
+    'game-over.png',
+    'game-over-skull.png',
+    'gamer.png',
+    'ghost.png',
+    'ghost-2.png',
+] as const;
+const artworkFile = artworkFiles[(game.id - 1) % artworkFiles.length];
+---
+
+<img
+    src={`${baseUrl}assets/${artworkFile}`}
+    alt={`Illustration for ${game.title}`}
+    class:list={[
+        'block',
+        variant === 'card'
+            ? 'h-full w-full object-cover'
+            : 'retro-card-art h-52 w-full rounded-xl object-cover sm:h-60',
+    ]}
+    data-testid="game-artwork"
+/>

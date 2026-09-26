@@ -239,7 +239,7 @@ test.describe('Accessibility Tests', () => {
     
     // Check game card arrow SVGs have aria-hidden (scope to first card to avoid strict mode violation)
     const firstGameCard = page.locator('[data-testid="game-card"]').first();
-    const gameCardSvgs = firstGameCard.locator('svg');
+    const gameCardSvgs = firstGameCard.locator('svg:not([data-testid="game-artwork"])');
     const count = await gameCardSvgs.count();
     
     // Verify at least one SVG exists and all have aria-hidden
