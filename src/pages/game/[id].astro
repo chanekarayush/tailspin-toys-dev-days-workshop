@@ -29,28 +29,34 @@ if (!game) {
 
 <Layout title="Game Details - Tailspin Toys">
   <div class="py-8">
-    <Card class="overflow-hidden" data-testid="game-details">
-      <div class="aspect-[16/7] max-h-96 overflow-hidden">
-        <GameArtwork game={game} />
-      </div>
+    <Card class="arcade-outline overflow-hidden rounded-2xl" data-testid="game-details">
       <div class="p-6">
-        <div class="flex justify-between items-start flex-wrap gap-3">
-          <h1 class="theme-heading mb-2 text-3xl font-bold" data-testid="game-details-title">{game.title}</h1>
+        <div class="mb-6 grid gap-5 md:grid-cols-[0.75fr_1.25fr] md:items-center">
+          <div class="overflow-hidden rounded-2xl border border-[var(--color-border-default)] bg-[var(--color-surface-muted)] p-3">
+            <img src="/assets/arcade-machine.png" alt="Retro arcade machine illustration" class="retro-card-art h-52 w-full rounded-xl object-cover sm:h-60" />
+          </div>
 
-          <StarRating rating={game.starRating} />
-        </div>
+          <div>
+            <p class="arcade-kicker mb-3 text-xs font-bold uppercase">Now loading into the table</p>
+            <div class="flex justify-between items-start flex-wrap gap-3">
+              <h1 class="theme-heading mb-2 text-3xl font-bold" data-testid="game-details-title">{game.title}</h1>
 
-        <div class="flex flex-wrap gap-2 mt-4 mb-6">
-          {game.category && (
-            <Tag color="blue" data-testid="game-details-category">
-              {game.category.name}
-            </Tag>
-          )}
-          {game.publisher && (
-            <a href={`/publisher/${game.publisher.id}`} data-testid="game-details-publisher-link">
-              <Tag color="purple" data-testid="game-details-publisher">{game.publisher.name}</Tag>
-            </a>
-          )}
+              <StarRating rating={game.starRating} />
+            </div>
+
+            <div class="mt-4 flex flex-wrap gap-2">
+              {game.category && (
+                <Tag color="blue" data-testid="game-details-category">
+                  {game.category.name}
+                </Tag>
+              )}
+              {game.publisher && (
+                <a href={`/publisher/${game.publisher.id}`} data-testid="game-details-publisher-link">
+                  <Tag color="purple" data-testid="game-details-publisher">{game.publisher.name}</Tag>
+                </a>
+              )}
+            </div>
+          </div>
         </div>
 
         {(game.category?.description || game.publisher?.description) && (
@@ -77,10 +83,23 @@ if (!game) {
           </div>
         </div>
 
-        <div class="mt-8">
-          <Button variant="gradient" fullWidth data-testid="back-game-button">
+        <div class="mt-8 rounded-xl border border-[var(--color-border-default)] bg-[var(--color-surface-muted)] p-4">
+          <p class="theme-copy-muted mb-3 text-sm">Ready to make this your next game night?</p>
+          <Button
+            variant="gradient"
+            fullWidth
+            data-testid="back-game-button"
+            data-game-id={game.id}
+            data-game-title={game.title}
+            data-game-description={game.description}
+            data-game-rating={game.starRating ?? ''}
+            data-game-category-id={game.category?.id ?? ''}
+            data-game-category-name={game.category?.name ?? ''}
+            data-game-publisher-id={game.publisher?.id ?? ''}
+            data-game-publisher-name={game.publisher?.name ?? ''}
+          >
             <Heart class="h-5 w-5 mr-2" aria-hidden="true" />
-            Support This Game
+            <span data-testid="support-game-button-label">Support This Game</span>
           </Button>
         </div>
       </div>
@@ -94,3 +113,59 @@ if (!game) {
     </div>
   </div>
 </Layout>
+
+<script>
+  import { addGameToWishlist, isGameSaved } from '../../lib/wishlist';
+
+  const supportButton = document.querySelector<HTMLButtonElement>('[data-testid="back-game-button"]');
+  const supportButtonLabel = document.querySelector<HTMLElement>('[data-testid="support-game-button-label"]');
+
+  const sourceGame = {
+    id: Number(supportButton?.dataset.gameId),
+    title: supportButton?.dataset.gameTitle ?? '',
+    description: supportButton?.dataset.gameDescription ?? '',
+    starRating: supportButton?.dataset.gameRating ? Number(supportButton.dataset.gameRating) : null,
+    category: supportButton?.dataset.gameCategoryId
+      ? {
+          id: Number(supportButton.dataset.gameCategoryId),
+          name: supportButton.dataset.gameCategoryName ?? '',
+          description: null,
+        }
+      : null,
+    publisher: supportButton?.dataset.gamePublisherId
+      ? {
+          id: Number(supportButton.dataset.gamePublisherId),
+          name: supportButton.dataset.gamePublisherName ?? '',
+          description: null,
+        }
+      : null,
+  };
+
+  const syncSupportButton = (): void => {
+    if (!supportButton || !supportButtonLabel || !Number.isFinite(sourceGame.id)) {
+      return;
+    }
+
+    const alreadySaved = isGameSaved(sourceGame.id, window.localStorage);
+    supportButton.disabled = alreadySaved;
+    supportButton.classList.toggle('opacity-75', alreadySaved);
+    supportButton.classList.toggle('cursor-not-allowed', alreadySaved);
+    supportButtonLabel.textContent = alreadySaved ? 'Added to Wishlist' : 'Support This Game';
+  };
+
+  if (supportButton) {
+    supportButton.addEventListener('click', () => {
+      addGameToWishlist(sourceGame, window.localStorage);
+      syncSupportButton();
+      window.dispatchEvent(new CustomEvent('tailspin-wishlist-updated'));
+      window.dispatchEvent(new CustomEvent('tailspin-wishlist-added', {
+        detail: {
+          title: sourceGame.title,
+          gameId: sourceGame.id,
+        },
+      }));
+    });
+  }
+
+  syncSupportButton();
+</script>

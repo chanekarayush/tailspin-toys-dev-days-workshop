@@ -91,6 +91,13 @@ full catalog. The landing page also summarizes the database with the total game
 count and the average star rating across rated titles, while handling empty or
 unrated catalog states gracefully.
 
+## Wishlist
+
+The site includes a browser-persisted wishlist for games users want to support.
+Clicking the “Support This Game” button on a title detail page stores that game in
+`localStorage`, and the wishlist page lists all saved titles with controls to
+remove individual items or clear the entire list.
+
 ## Database
 
 The SQLite database is built from `db/games.csv` — there is no live data to migrate.
