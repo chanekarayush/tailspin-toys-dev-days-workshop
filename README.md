@@ -15,6 +15,8 @@ The database is migrated and seeded automatically before `dev`/`build` (via the 
 
 The home page supports filtering the catalog by one or more categories and by publisher. Filters update the statically rendered catalog in the browser, so no backend service is required.
 
+Catalog cards and game detail pages display original, locally rendered SVG cover illustrations, so artwork is available in static builds without external image requests.
+
 ## Coding standards
 
 ### Theme conventions

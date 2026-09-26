@@ -5,6 +5,7 @@ import StarRating from '../../components/StarRating.astro';
 import Tag from '../../components/Tag.astro';
 import Card from '../../components/Card.astro';
 import Button from '../../components/Button.astro';
+import GameArtwork from '../../components/GameArtwork.astro';
 import ArrowLeft from '../../assets/icons/arrow-left.svg';
 const baseUrl = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 import Heart from '../../assets/icons/heart.svg';
@@ -29,6 +30,9 @@ if (!game) {
 <Layout title="Game Details - Tailspin Toys">
   <div class="py-8">
     <Card class="overflow-hidden" data-testid="game-details">
+      <div class="aspect-[16/7] max-h-96 overflow-hidden">
+        <GameArtwork game={game} />
+      </div>
       <div class="p-6">
         <div class="flex justify-between items-start flex-wrap gap-3">
           <h1 class="theme-heading mb-2 text-3xl font-bold" data-testid="game-details-title">{game.title}</h1>
